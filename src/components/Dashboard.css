@@ -1,0 +1,95 @@
+.dashboard {
+  font-family: Arial;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.description {
+  margin-bottom: 20px;
+}
+
+.questionnaire-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+}
+
+.questionnaire-table th,
+.questionnaire-table td {
+  border: none;
+  padding: 10px;
+  text-align: left;
+}
+
+.questionnaire-table th {
+  
+  border-radius: 8px;
+}
+
+.continue-btn {
+  background-color: #8E2DE2; 
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px 20px 20px 20px; 
+  cursor: pointer;
+}
+
+.continue-btn:hover {
+  background-color: #af78e4; 
+}
+.print-btn {
+  background-color: #8E2DE2;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.print-btn:hover {
+  background-color: #74349c;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.log-out-btn {
+  background-color: #f44336;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.log-out-btn {
+  background-color: #f44336;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  top: 20px; 
+  right: 20px;
+}
+
+.log-out-btn:hover {
+  background-color: #da190b;
+}

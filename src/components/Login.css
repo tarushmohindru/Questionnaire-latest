@@ -1,0 +1,117 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: rgb(171,101,250);
+  background: radial-gradient(circle, rgba(171,101,250,1) 0%, rgba(247,101,255,1) 100%, rgba(253,233,250,1) 100%);
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-left {
+  background: rgb(171,101,250);
+  background: radial-gradient(circle, rgba(171,101,250,1) 0%, rgba(247,101,255,1) 100%, rgba(253,233,250,1) 100%);
+  flex: 1;
+  max-width: 15%;
+}
+
+.login-left h1 {
+  font-size: 20px;
+  font-weight: normal;
+  margin-bottom: auto;
+  margin-top: 5;
+  text-align: center;
+}
+
+.login-right {
+  background: rgb(171,101,250);
+  background: linear-gradient(266deg, rgba(171,101,250,1) 0%, rgba(202,169,255,1) 52%, rgba(250,244,255,1) 100%);
+  flex: 2;
+  max-width: 85%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.login-right h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+label1 {
+  margin-bottom: 5px;
+  color: black;
+  text-align: left;
+  margin-right: 235px;
+}
+
+label2 {
+  margin-bottom: 5px;
+  color: black;
+  text-align: left;
+  margin-right: 210px;
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 500px;
+  background-color: #FFFFFF;
+  color: #000000;
+  box-sizing: border-box;
+  box-shadow: inset;
+}
+
+input::placeholder {
+  color: #AAAAAA;
+}
+
+.next-button {
+  background-color: blue;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.next-button:hover {
+  background-color: black;
+}
+
+.signup-link {
+  color: blue;
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}

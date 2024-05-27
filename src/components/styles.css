@@ -1,0 +1,14 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #232120; /* Same as the background color of the page */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #232120; /* Custom scrollbar color */
+  border-radius: 10px;
+  border: 2px solid #232120; /* Same as the background color of the page */
+}
