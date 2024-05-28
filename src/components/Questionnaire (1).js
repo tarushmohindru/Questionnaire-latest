@@ -11,36 +11,35 @@ import {
   FormControlLabel,
   Pagination,
   Tooltip,
+  IconButton,
+  InputBase,
+  Paper,
 } from "@mui/material";
+import {
+  ArrowBack as ArrowBackIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  UploadFile as UploadFileIcon,
+  ListAlt as ListAltIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
 import CheckboxQuestion from "./CheckboxQuestion";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import ScaleQuestion from "./ScaleQuestion";
 import TextQuestion from "./TextQuestion";
 import ParagraphTextQuestion from "./ParagraphTextQuestion";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import GridQuestion from "./GridQuestion";
 import { getQByQID, saveAnswer } from "../api";
-import {
-  qStore,
-  jwtStore,
-  gridStore,
-  answerStore,
-  solnStore,
-} from "../redux/store";
+import { qStore, jwtStore, gridStore, answerStore, solnStore } from "../redux/store";
 import { useSearchParams } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./styles.css";
-import CheckboxGridQuestion from "./CheckboxGrid";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const Questionnaire = () => {
-  const [currentQuestion, setcurrentQuestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [completedSections, setCompletedSections] = useState(0);
   const [intervals, setIntervals] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -61,19 +60,22 @@ const Questionnaire = () => {
   const [pdfSearchQuery, setPdfSearchQuery] = useState("");
   const [numPages, setNumPages] = useState(null);
   const [searchSummary, setSearchSummary] = useState([]);
+  const [pdfSuggestions, setPdfSuggestions] = useState([]);
   const [selectedPdfTexts, setSelectedPdfTexts] = useState([]);
+  const [questionReferences, setQuestionReferences] = useState([]);
   const [currentSection, setCurrentSection] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageTitle, setPageTitle] = useState("");
   const [answerObject, setAnswerObject] = useState("");
   const fileInputRef = useRef(null);
+  const pdfContainerRef = useRef(null);
   const API_KEY = "AIzaSyCtqidSRsI2NhNP-vQrx1Ixq0gQHcH_eUM";
   const CX = "60cbe814015d24004";
 
   const typemap = {
     MULTIPLE_CHOICE: MultipleChoiceQuestion,
     GRID: GridQuestion,
-    CHECKBOX_GRID: CheckboxGridQuestion,
+    CHECKBOX_GRID: GridQuestion,
     PAGE_BREAK: TextQuestion,
     TEXT: TextQuestion,
     SECTION_HEADER: TextQuestion,
@@ -83,9 +85,11 @@ const Questionnaire = () => {
   };
 
   const handleNext = () => {
+    saveCurrentReferences();
     if (currentQuestion < questions.length - 1) {
-      setcurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion + 1);
       setCompletedSections(completedSections + 1);
+      loadReferencesForQuestion(currentQuestion + 1);
     }
     save({
       answer_id: currentQID,
@@ -94,14 +98,18 @@ const Questionnaire = () => {
   };
 
   const handleBack = () => {
+    saveCurrentReferences();
     if (currentQuestion > 0) {
-      setcurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion(currentQuestion - 1);
+      loadReferencesForQuestion(currentQuestion - 1);
     }
   };
 
   const handleSubmit = () => {
+    saveCurrentReferences();
     setCompletedSections(completedSections + 1);
     setOpenDialog(true);
+    console.log(generateJsonOutput());
   };
 
   const handleSaveAndExit = () => {
@@ -152,13 +160,22 @@ const Questionnaire = () => {
     }
     setSelectedResults(selected);
 
-    const updatedReferences = searchResults
-      .filter((_, idx) => selected.includes(idx))
-      .map((result, idx) => ({
+    const updatedReferences = [
+      ...selected.map((idx) => ({
+        type: "search",
         sn: idx + 1,
-        title: result.title,
-        snippet: result.snippet,
-      }));
+        title: searchResults[idx].title,
+        snippet: searchResults[idx].snippet,
+        link: searchResults[idx].link,
+      })),
+      ...selectedPdfTexts.map((result, idx) => ({
+        type: "pdf",
+        sn: selected.length + idx + 1,
+        title: `Page ${result.page}`,
+        snippet: result.text,
+        link: pdfFile,
+      })),
+    ];
     setReferences(updatedReferences);
   };
 
@@ -234,16 +251,56 @@ const Questionnaire = () => {
 
     setSelectedPdfTexts(selected);
 
-    const updatedReferences = selected.map((result, idx) => ({
-      sn: idx + 1,
-      title: `Page ${result.page}`,
-      snippet: result.text,
-    }));
-
+    const updatedReferences = [
+      ...selectedResults.map((idx) => ({
+        type: "search",
+        sn: idx + 1,
+        title: searchResults[idx].title,
+        snippet: searchResults[idx].snippet,
+        link: searchResults[idx].link,
+      })),
+      ...selected.map((result, idx) => ({
+        type: "pdf",
+        sn: selectedResults.length + idx + 1,
+        title: `Page ${result.page}`,
+        snippet: result.text,
+        link: pdfFile,
+      })),
+    ];
     setReferences(updatedReferences);
   };
 
-  const progressPercentage = ((currentQuestion + 1) / questions.length) * 100;
+  const saveCurrentReferences = () => {
+    const updatedQuestionReferences = [...questionReferences];
+    updatedQuestionReferences[currentQuestion] = references;
+    setQuestionReferences(updatedQuestionReferences);
+  };
+
+  const loadReferencesForQuestion = (questionIndex) => {
+    const refs = questionReferences[questionIndex] || [];
+    setReferences(refs);
+    setSelectedResults(
+      refs.filter((ref) => ref.type === "search").map((ref) => ref.sn - 1)
+    );
+    setSelectedPdfTexts(
+      refs.filter((ref) => ref.type === "pdf").map((ref) => ({
+        text: ref.snippet,
+        page: parseInt(ref.title.split(" ")[1]),
+      }))
+    );
+  };
+
+  const generateJsonOutput = () => {
+    return questions.map((question, index) => ({
+      question: question.itemTitle,
+      references: questionReferences[index] || [],
+    }));
+  };
+
+  const progressPercentage =
+    questions.length > 0
+      ? ((completedSections + 1) / questions.length) * 100
+      : 0;
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -388,12 +445,6 @@ const Questionnaire = () => {
       }
       breaks++;
     }
-    // let result = res.data.filter((e) => {
-    //   if (e.type == "SECTION_HEADER" || e.type == "PAGE_BREAK") {
-    //     return false;
-    //   }
-    //   return true;
-    // });
     setSectionHeaders(secHeaders);
     setQuestions(res.data);
     setIntervals(breaks);
@@ -417,7 +468,6 @@ const Questionnaire = () => {
   useEffect(() => {
     getQ(searchParams.get("id"), jwtStore.getState());
     if (questions.length != 0) {
-      console.log(questions[currentQuestion].answers);
       solnStore.dispatch({
         type: "solution",
         payload: questions[currentQuestion].answers,
@@ -427,7 +477,6 @@ const Questionnaire = () => {
 
   useEffect(() => {
     if (questions.length != 0) {
-      console.log(questions[currentQuestion].answers);
       solnStore.dispatch({
         type: "solution",
         payload: questions[currentQuestion].answers,
@@ -440,7 +489,6 @@ const Questionnaire = () => {
         gridStore.dispatch({
           type: "grid",
           payload: {
-            // itemTitle: questions[currentQuestion].itemTitle,
             options: JSON.parse(questions[currentQuestion].columns),
             columns: Object.keys(JSON.parse(questions[currentQuestion].rows)),
           },
@@ -450,9 +498,9 @@ const Questionnaire = () => {
       let ques = questions[currentQuestion];
       if (ques.type == "SECTION_HEADER") {
         setCurrentSection(ques.itemTitle);
-        setcurrentQuestion(currentQuestion + 1);
+        setCurrentQuestion(currentQuestion + 1);
       } else if (ques.type == "PAGE_BREAK") {
-        setcurrentQuestion(currentQuestion + 1);
+        setCurrentQuestion(currentQuestion + 1);
       }
     }
   }, [currentQuestion]);
@@ -494,29 +542,39 @@ const Questionnaire = () => {
                   marginTop: "10px",
                 }}
               >
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                    boxSizing: "border-box",
-                    color: "black",
+                <Paper
+                  component="form"
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
                   }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleSearch(1)}
-                  className="glow-on-hover"
-                  style={{ marginLeft: "10px", height: "40px" }}
                 >
-                  Search
-                </Button>
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search"
+                    inputProps={{ "aria-label": "search" }}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px" }}
+                    aria-label="search"
+                    onClick={() => handleSearch(1)}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px" }}
+                    aria-label="close"
+                    onClick={toggleSearchBar}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Paper>
               </div>
               <div
                 style={{
@@ -583,38 +641,39 @@ const Questionnaire = () => {
                   marginBottom: "10px",
                 }}
               >
-                <input
-                  type="text"
-                  placeholder="Search in PDF..."
-                  value={pdfSearchQuery}
-                  onChange={(e) => setPdfSearchQuery(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                    boxSizing: "border-box",
-                    color: "black",
+                <Paper
+                  component="form"
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
                   }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handlePdfSearch(pdfSearchQuery)}
-                  className="glow-on-hover"
-                  style={{ marginLeft: "10px", height: "40px" }}
                 >
-                  Search
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handlePdfClose}
-                  className="glow-on-hover"
-                  style={{ marginLeft: "10px", height: "40px" }}
-                >
-                  Close PDF
-                </Button>
+                  <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search in PDF..."
+                    inputProps={{ "aria-label": "search in pdf" }}
+                    value={pdfSearchQuery}
+                    onChange={(e) => setPdfSearchQuery(e.target.value)}
+                  />
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px" }}
+                    aria-label="search"
+                    onClick={() => handlePdfSearch(pdfSearchQuery)}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px" }}
+                    aria-label="close"
+                    onClick={handlePdfClose}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Paper>
               </div>
               <div
                 style={{
@@ -698,6 +757,15 @@ const Questionnaire = () => {
                     >
                       Preview Text
                     </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #A6A4A3",
+                        paddingBottom: "10px",
+                        color: "#A6A4A3",
+                      }}
+                    >
+                      Link
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -717,6 +785,16 @@ const Questionnaire = () => {
                       </td>
                       <td style={{ padding: "10px", color: "#A6A4A3" }}>
                         {reference.snippet}
+                      </td>
+                      <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                        <a
+                          href={reference.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#FDFBFA", textDecoration: "none" }}
+                        >
+                          {reference.link}
+                        </a>
                       </td>
                     </tr>
                   ))}
@@ -741,7 +819,7 @@ const Questionnaire = () => {
         </Typography>
         <div style={questionStyles}>
           <Typography variant="h6" style={{ ...questionTextStyles }}>
-            {questions.length == 0 ? "" : questions[currentQuestion].itemTitle}
+            {questions.length === 0 ? "" : questions[currentQuestion].itemTitle}
           </Typography>
           <div
             style={{
@@ -773,11 +851,91 @@ const Questionnaire = () => {
                 optionStyles: optionStyles,
               })}
           </div>
+          {isReferenceTableOpen && (
+            <div style={referenceTableStyles}>
+              <Typography variant="h6" style={referenceTableHeaderStyles}>
+                References for this question
+              </Typography>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #A6A4A3",
+                        paddingBottom: "10px",
+                        color: "#A6A4A3",
+                      }}
+                    >
+                      Select
+                    </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #A6A4A3",
+                        paddingBottom: "10px",
+                        color: "#A6A4A3",
+                      }}
+                    >
+                      Search Result Title
+                    </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #A6A4A3",
+                        paddingBottom: "10px",
+                        color: "#A6A4A3",
+                      }}
+                    >
+                      Preview Text
+                    </th>
+                    <th
+                      style={{
+                        borderBottom: "1px solid #A6A4A3",
+                        paddingBottom: "10px",
+                        color: "#A6A4A3",
+                      }}
+                    >
+                      Link
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {references.map((reference, index) => (
+                    <tr key={index}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          textAlign: "center",
+                          color: "#A6A4A3",
+                        }}
+                      >
+                        <Checkbox checked />
+                      </td>
+                      <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                        {reference.title}
+                      </td>
+                      <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                        {reference.snippet}
+                      </td>
+                      <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                        <a
+                          href={reference.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#FDFBFA", textDecoration: "none" }}
+                        >
+                          {reference.link}
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           {currentQuestion < questions.length - 1 ? (
             <Button
               variant="contained"
               onClick={handleNext}
-              className="glow-on-hover"
+              className="icon-slide-right"
               style={{
                 backgroundColor: "#333230",
                 color: "white",
@@ -788,9 +946,6 @@ const Questionnaire = () => {
                 display: "block",
                 margin: "20px auto 40px auto",
                 border: "1px solid #FFBC58",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#FFBC58";
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.borderColor = "#333230";
@@ -808,7 +963,7 @@ const Questionnaire = () => {
             <Button
               variant="contained"
               onClick={handleSubmit}
-              className="glow-on-hover"
+              className="icon-slide-right"
               style={{
                 backgroundColor: "#333230",
                 color: "white",
@@ -919,33 +1074,45 @@ const Questionnaire = () => {
           </Tooltip>
         </div>
       </div>
-      <Button
-        variant="text"
-        color="primary"
-        onClick={handleSaveAndExit}
-        className="glow-on-hover"
+      <div
         style={{
-          color: "#A4A1A0",
-          backgroundColor: "#232120",
           position: "absolute",
           top: "20px",
           right: "20px",
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.color = "#ffffff";
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.color = "#A4A1A0";
-        }}
-        onMouseDown={(e) => {
-          e.currentTarget.style.backgroundColor = "#333230";
-        }}
-        onMouseUp={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        Save and Exit
-      </Button>
+        <Button
+          variant="text"
+          color="primary"
+          startIcon={
+            <CloseIcon
+              style={{ color: "#A4A1A0", fontSize: 30, marginRight: "-5px" }}
+            />
+          }
+          onClick={handleSaveAndExit}
+          className="glow-on-hover"
+          style={{
+            color: "#A4A1A0",
+            backgroundColor: "#232120",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.color = "#ffffff";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.color = "#A4A1A0";
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.backgroundColor = "#333230";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          Save and Exit
+        </Button>
+      </div>
       {isMenuOpen && (
         <div style={menuContainerStyles} onClick={(e) => e.stopPropagation()}>
           <Button

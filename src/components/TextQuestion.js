@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Typography, Box } from "@mui/material";
-import { answerStore } from "../redux/store";
+import { answerStore, solnStore } from "../redux/store";
 
 const TextQuestion = ({ question }) => {
   const [data, setData] = useState("");
@@ -11,6 +11,10 @@ const TextQuestion = ({ question }) => {
       payload: e.target.value,
     });
   };
+  solnStore.subscribe(() => {
+    setData(solnStore.getState());
+    console.log(solnStore.getState());
+  });
   return (
     <Box
       sx={{

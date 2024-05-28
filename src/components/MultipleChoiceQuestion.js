@@ -7,7 +7,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { answerStore } from "../redux/store";
+import { answerStore, solnStore } from "../redux/store";
 
 const MultipleChoiceQuestion = ({ question, options }) => {
   const handleChange = (e) => {
@@ -16,6 +16,10 @@ const MultipleChoiceQuestion = ({ question, options }) => {
       payload: e.target.value,
     });
   };
+
+  solnStore.subscribe(() => {
+    console.log(solnStore.getState());
+  });
   return (
     <Box
       display="flex"
