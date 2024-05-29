@@ -12,7 +12,7 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import { answerStore, gridStore } from "../redux/store";
+import { answerStore, gridStore, solnStore } from "../redux/store";
 
 const formStyles = {
   container: {
@@ -86,11 +86,16 @@ const GridQuestion = () => {
       type: "answer_object",
       payload: { ...selectedOption, [item.name]: selected },
     });
-    console.log({ ...selectedOption, [item.name]: selected });
   };
 
   const getCellBackgroundColor = (item, option) => {
     return selectedOption[item.name] === option ? "#E9DFDA" : "white";
+  };
+
+  const handlePreSelectAnswers = () => {
+    if (solnStore.getState()) {
+      setSelectedOption(solnStore.getState());
+    }
   };
 
   useEffect(() => {
@@ -100,6 +105,7 @@ const GridQuestion = () => {
       setOptions(state.options);
       setColumns(state.columns);
     });
+    handlePreSelectAnswers();
     return () => unsubscribe();
   }, []);
 

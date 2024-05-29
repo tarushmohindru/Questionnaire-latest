@@ -13,7 +13,6 @@ const TextQuestion = ({ question }) => {
   };
   solnStore.subscribe(() => {
     setData(solnStore.getState());
-    console.log(solnStore.getState());
   });
   return (
     <Box

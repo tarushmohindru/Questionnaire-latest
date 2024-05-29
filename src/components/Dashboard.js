@@ -12,7 +12,7 @@ const Dashboard = () => {
   const fetchQuestionnare = async (jwt) => {
     try {
       let res = await getQList(jwt);
-      console.log(res);
+
       setQues(Array.isArray(res) ? res : []);
     } catch (error) {
       console.error("Failed to fetch questionnaires", error);
@@ -76,7 +76,12 @@ const Dashboard = () => {
                   Continue
                 </button>
                 &nbsp;
-                <button className="print-btn" style={{ backgroundColor: "#AE7F5D" }}>Print</button>
+                <button
+                  className="print-btn"
+                  style={{ backgroundColor: "#AE7F5D" }}
+                >
+                  Print
+                </button>
               </td>
             </tr>
           ))}

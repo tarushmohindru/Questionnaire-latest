@@ -7,10 +7,16 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { answerStore } from "../redux/store";
+import { answerStore, solnStore } from "../redux/store";
 
 const CheckboxQuestion = ({ question, options }) => {
   const [answers, setAnswers] = useState({});
+
+  solnStore.subscribe(() => {
+    if (solnStore.getState()) {
+      setAnswers(solnStore.getState());
+    }
+  });
 
   useEffect(() => {
     options.map((option) => {
@@ -60,6 +66,7 @@ const CheckboxQuestion = ({ question, options }) => {
                           payload: { ...answers, [option]: e.target.checked },
                         });
                       }}
+                      checked={answers[option] ? answers[option] : false}
                     />
                   }
                   label={option}

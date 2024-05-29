@@ -1,6 +1,6 @@
 import React from "react";
 import { Slider, Typography, Box } from "@mui/material";
-import { answerStore } from "../redux/store";
+import { answerStore, solnStore } from "../redux/store";
 
 const ScaleQuestion = ({ question, minLabel, maxLabel }) => {
   const [value, setValue] = React.useState(3);
@@ -12,6 +12,12 @@ const ScaleQuestion = ({ question, minLabel, maxLabel }) => {
       payload: newValue,
     });
   };
+
+  solnStore.subscribe(() => {
+    if (solnStore.getState()) {
+      setValue(solnStore.getState());
+    }
+  });
 
   return (
     <Box

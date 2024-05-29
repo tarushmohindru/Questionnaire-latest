@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FormControl,
   FormControlLabel,
@@ -10,7 +10,9 @@ import {
 import { answerStore, solnStore } from "../redux/store";
 
 const MultipleChoiceQuestion = ({ question, options }) => {
+  const [answer, setAnswer] = useState("");
   const handleChange = (e) => {
+    setAnswer(e.target.value);
     answerStore.dispatch({
       type: "answer_object",
       payload: e.target.value,
@@ -18,7 +20,7 @@ const MultipleChoiceQuestion = ({ question, options }) => {
   };
 
   solnStore.subscribe(() => {
-    console.log(solnStore.getState());
+    setAnswer(solnStore.getState());
   });
   return (
     <Box
@@ -52,6 +54,7 @@ const MultipleChoiceQuestion = ({ question, options }) => {
             >
               <FormControlLabel
                 value={option}
+                checked={answer === option}
                 onChange={(e) => {
                   handleChange(e);
                 }}
