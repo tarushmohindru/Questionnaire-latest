@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
-import { getQList } from "../api";
+import { getNewQ, getQList } from "../api";
 import { jwtStore, qStore } from "../redux/store";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +18,15 @@ const Dashboard = () => {
       console.error("Failed to fetch questionnaires", error);
       setQues([]);
     }
+  };
+
+  const handleNew = async () => {
+    let res = await getNewQ(jwt);
+    qStore.dispatch({
+      type: "questionnaire",
+      payload: res.data,
+    });
+    navigate(`/questionnare?id=${res.qid}`);
   };
 
   useEffect(() => {
@@ -44,7 +53,17 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
       </div>
       <div className="description">
-        <p>Start a new questionnaire or continue your previous one's.</p>
+        <p>
+          <button
+            onClick={() => {
+              handleNew();
+            }}
+            className="start-btn"
+          >
+            Start
+          </button>{" "}
+          a new questionnaire or continue your previous one's.
+        </p>
       </div>
       <table className="questionnaire-table">
         <thead>

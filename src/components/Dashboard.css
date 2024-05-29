@@ -78,6 +78,15 @@
   cursor: pointer;
 }
 
+.start-btn {
+  background-color: #16a200;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .log-out-btn {
   background-color: #f44336;
   color: #ffffff;

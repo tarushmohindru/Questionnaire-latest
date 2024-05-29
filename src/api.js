@@ -86,7 +86,11 @@ export const getQByQID = async (id, jwtToken) => {
 /**Get a new questionnare for the user */
 export const getNewQ = async (jwtToken) => {
   try {
-    let res = await axios.get(`${url}/q/new`);
+    let res = await axios.get(`${url}/q/new`, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    });
     return res.data;
   } catch (e) {
     return e;
