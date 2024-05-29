@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import { Box, Button, TextField, Typography, Link, Modal } from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from "@mui/icons-material";
 import wave from "./wave.svg";
@@ -108,25 +108,45 @@ const NextButton = styled(Button)({
   padding: "0 16px",
 });
 
+const ErrorModal = styled(Modal)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const ErrorBox = styled(Box)({
+  backgroundColor: "white",
+  borderRadius: "10px",
+  padding: "20px",
+  textAlign: "center",
+  outline: "none",
+});
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Login submitted:", username, password);
     let res = await login(username, password, "testorgkey");
-    console.log(res);
-    jwtStore.dispatch({
-      type: "jwt",
-      payload: res.token,
-    });
-    if (res.message == "OK") {
+    if (res.message === "OK") {
+      jwtStore.dispatch({
+        type: "jwt",
+        payload: res.token,
+      });
       navigate("/home");
     } else {
-      console.log(res);
+      setError("Invalid credentials, please try again");
+      setOpen(true);
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -164,6 +184,14 @@ const Login = () => {
             </NextButton>
           </form>
         </LoginForm>
+        <ErrorModal open={open} onClose={handleClose}>
+          <ErrorBox>
+            <Typography variant="h6" color="error">
+              {error}
+            </Typography>
+            <Button onClick={handleClose}>Close</Button>
+          </ErrorBox>
+        </ErrorModal>
       </RightPane>
     </Container>
   );

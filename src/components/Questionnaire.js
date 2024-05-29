@@ -432,30 +432,47 @@ const Questionnaire = () => {
   };
 
   const getQ = async (id, jwt) => {
-    let res = await getQByQID(id, jwt);
-    let breaks = 1;
+    try {
+      let res = await getQByQID(id, jwt);
 
-    setPageTitle(res.form.title);
+      if (res && res.form && res.data) {
+        let breaks = 1;
 
-    let secHeaders = [];
-    for (let i = 0; i < res.data.length; i++) {
-      if (res.data[i].type === "SECTION_HEADER") {
-        let ques = res.data[i];
-        ques.start = i - breaks;
-        secHeaders.push(ques);
+        setPageTitle(res.form.title);
+
+        let secHeaders = [];
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].type === "SECTION_HEADER") {
+            let ques = res.data[i];
+            ques.start = i - breaks;
+            secHeaders.push(ques);
+          }
+          breaks++;
+        }
+        setSectionHeaders(secHeaders);
+        setQuestions(res.data);
+        setIntervals(breaks);
+      } else {
+        console.error("Invalid response structure", res);
       }
-      breaks++;
+    } catch (error) {
+      console.error("Error fetching questions", error);
     }
-    // let result = res.data.filter((e) => {
-    //   if (e.type == "SECTION_HEADER" || e.type == "PAGE_BREAK") {
-    //     return false;
-    //   }
-    //   return true;
-    // });
-    setSectionHeaders(secHeaders);
-    setQuestions(res.data);
-    setIntervals(breaks);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const id = searchParams.get("id");
+      const jwt = jwtStore.getState();
+      if (id && jwt) {
+        await getQ(id, jwt);
+      } else {
+        console.error("Missing required parameters: id or jwt");
+      }
+    };
+
+    fetchData();
+  }, [searchParams]);
 
   answerStore.subscribe(() => {
     setAnswerObject(answerStore.getState());
@@ -470,17 +487,7 @@ const Questionnaire = () => {
   };
 
   useEffect(() => {
-    getQ(searchParams.get("id"), jwtStore.getState());
-    if (questions.length != 0) {
-      solnStore.dispatch({
-        type: "solution",
-        payload: questions[currentQuestion].answers,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (questions.length != 0) {
+    if (questions.length !== 0) {
       solnStore.dispatch({
         type: "solution",
         payload: questions[currentQuestion].answers,
@@ -488,12 +495,11 @@ const Questionnaire = () => {
       setCurrentQID(questions[currentQuestion].id);
       if (
         questions[currentQuestion].type === "GRID" ||
-        questions[currentQuestion].type == "CHECKBOX_GRID"
+        questions[currentQuestion].type === "CHECKBOX_GRID"
       ) {
         gridStore.dispatch({
           type: "grid",
           payload: {
-            // itemTitle: questions[currentQuestion].itemTitle,
             options: JSON.parse(questions[currentQuestion].columns),
             columns: Object.keys(JSON.parse(questions[currentQuestion].rows)),
           },
@@ -501,14 +507,14 @@ const Questionnaire = () => {
       }
 
       let ques = questions[currentQuestion];
-      if (ques.type == "SECTION_HEADER") {
+      if (ques.type === "SECTION_HEADER") {
         setCurrentSection(ques.itemTitle);
         setcurrentQuestion(currentQuestion + 1);
-      } else if (ques.type == "PAGE_BREAK") {
+      } else if (ques.type === "PAGE_BREAK") {
         setcurrentQuestion(currentQuestion + 1);
       }
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, questions]);
 
   return (
     <div
