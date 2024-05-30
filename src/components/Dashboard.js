@@ -1,18 +1,130 @@
-import React, { useEffect, useState } from "react";
-import "./Dashboard.css";
-import { getNewQ, getQList } from "../api";
-import { jwtStore, qStore } from "../redux/store";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  LinearProgress,
+} from "@mui/material";
+import { Add as AddIcon } from "@mui/icons-material";
+import { styled } from "@mui/system";
+import PrintIcon from "./directbox-notif.svg";
+import Design from "./icon.svg";
 import { useNavigate } from "react-router-dom";
+import { getQList, getNewQ } from "../api";
+import { qStore, jwtStore } from "../redux/store";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [jwt, setJwt] = useState(jwtStore.getState());
   const [questionnare, setQues] = useState([]);
+  const cards = [
+    { name: "John Doe", date: "2024-May-02 03:26 UTC", progress: 16 },
+    { name: "Adriel Maddox", date: "2024-May-02 14:22 UTC", progress: 24 },
+    { name: "Charley McClain", date: "2024-May-12 23:15 UTC", progress: 55 },
+    { name: "John Doe", date: "2024-May-02 03:26 UTC", progress: 30 },
+    { name: "Adriel Maddox", date: "2024-May-02 14:22 UTC", progress: 100 },
+    { name: "Charley McClain", date: "2024-May-12 23:15 UTC", progress: 63 },
+  ];
+
+  const CustomCard = styled(Card)(({ theme }) => ({
+    borderRadius: "2rem",
+    boxShadow: "none",
+    backgroundColor: "#ededed",
+    padding: theme.spacing(2),
+    width: "250px",
+    height: "300px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    fontFamily: "DM Sans",
+  }));
+
+  const CustomButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#FF7E6B",
+    color: "#FFF",
+    "&:hover": {
+      backgroundColor: "#FF6A55",
+    },
+    borderRadius: "8px",
+    height: "35px",
+    fontSize: "14px",
+    padding: "0 16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: "auto",
+    margin: "0",
+    marginRight: "18px",
+    fontFamily: "DM Sans",
+  }));
+
+  const CustomIconButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#FF7E6B",
+    color: "#FFF",
+    "&:hover": {
+      backgroundColor: "#FF6A55",
+    },
+    borderRadius: "8px",
+    width: "35px",
+    height: "35px",
+    fontSize: "12px",
+    padding: "0",
+    minWidth: "auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "-20px",
+    fontFamily: "DM Sans",
+  }));
+
+  const NewCard = styled(Card)(({ theme }) => ({
+    borderRadius: "2rem",
+    boxShadow: "none",
+    backgroundColor: "#ededed",
+    padding: theme.spacing(2),
+    width: "600px",
+    height: "610px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    fontFamily: "DM Sans",
+  }));
+
+  const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    "& .MuiLinearProgress-bar": {
+      backgroundColor: "#FF7E6B",
+    },
+    backgroundColor: "#E0E0E0",
+  }));
+
+  const DashboardTitle = styled(Typography)(({ theme }) => ({
+    fontFamily: "Space Grotesk",
+  }));
+
+  const CreateNewButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#FF7E6B",
+    color: "#000",
+    "&:hover": {
+      backgroundColor: "#FF6A55",
+    },
+    borderRadius: "8px",
+    height: "35px",
+    fontSize: "14px",
+    padding: "0 16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: "auto",
+    margin: "0",
+    fontFamily: "DM Sans",
+  }));
 
   const fetchQuestionnare = async (jwt) => {
     try {
       let res = await getQList(jwt);
-
+      console.log(res);
       setQues(Array.isArray(res) ? res : []);
     } catch (error) {
       console.error("Failed to fetch questionnaires", error);
@@ -48,66 +160,120 @@ const Dashboard = () => {
   }, [jwt]);
 
   return (
-    <div className="dashboard">
-      <div className="header">
-        <h1>Dashboard</h1>
-      </div>
-      <div className="description">
-        <p>
-          <button
-            onClick={() => {
-              handleNew();
-            }}
-            className="start-btn"
-          >
-            Start
-          </button>{" "}
-          a new questionnaire or continue your previous one's.
-        </p>
-      </div>
-      <table className="questionnaire-table">
-        <thead>
-          <tr>
-            <th>Sr No</th>
-            <th>Issuer</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {questionnare.map((questionnaire, index) => (
-            <tr key={index + 1}>
-              <td>{index + 1}</td>
-              <td>{questionnaire.orgname}</td>
-              <td>{new Date(questionnaire.utctimestamp).toString()}</td>
-              <td>
-                <button
-                  className="continue-btn"
-                  style={{ backgroundColor: "#AE7F5D" }}
+    <div style={{ padding: "32px" }}>
+      <DashboardTitle
+        variant="h5"
+        style={{ marginBottom: "20px", fontWeight: "bold" }}
+      >
+        Dashboard
+      </DashboardTitle>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          gap: "40px",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "10px",
+          }}
+        >
+          {questionnare.map((card, index) => (
+            <CustomCard key={index}>
+              <CardContent style={{ flex: "1 0 auto" }}>
+                <Typography variant="h6" gutterBottom>
+                  {card.orgname}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {new Date(card.utctimestamp).toString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  style={{ marginTop: "8px", marginBottom: "8px" }}
+                >
+                  {card.progress}% Completed
+                </Typography>
+                <CustomLinearProgress
+                  variant="determinate"
+                  value={card.progress}
+                  style={{ marginBottom: "16px" }}
+                />
+              </CardContent>
+              <CardContent
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  gap: "8px",
+                }}
+              >
+                <CustomButton
+                  size="small"
+                  style={{ marginLeft: "10px", bottom: "-25px" }}
                   onClick={() => {
                     qStore.dispatch({
                       type: "questionnaire",
-                      payload: questionnaire,
+                      payload: card,
                     });
-                    navigate(`/questionnare?id=${questionnaire.qid}`);
+                    navigate(`/questionnare?id=${card.qid}`);
                   }}
                 >
                   Continue
-                </button>
-                &nbsp;
-                <button
-                  className="print-btn"
-                  style={{ backgroundColor: "#AE7F5D" }}
-                >
-                  Print
-                </button>
-              </td>
-            </tr>
+                  <img
+                    src={Design}
+                    alt="Print"
+                    style={{ marginLeft: "5px", width: "15px", height: "15px" }}
+                  />
+                </CustomButton>
+                <CustomIconButton size="small" style={{ bottom: "-25px" }}>
+                  <img
+                    src={PrintIcon}
+                    alt="Print"
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                </CustomIconButton>
+              </CardContent>
+            </CustomCard>
           ))}
-        </tbody>
-      </table>
-      <div className="footer">
-        <button className="log-out-btn">Log out</button>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            marginRight: "120px",
+          }}
+        >
+          <NewCard style={{ left: "500px" }}>
+            <CardContent
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="h6"
+                color="primary"
+                style={{ marginRight: "8px", color: "#000" }}
+              >
+                Create New
+              </Typography>
+              <CreateNewButton
+                style={{ width: "30px", height: "30px" }}
+                onClick={() => {
+                  handleNew();
+                }}
+              >
+                <AddIcon fontSize="small" style={{ color: "white" }} />
+              </CreateNewButton>
+            </CardContent>
+          </NewCard>
+        </div>
       </div>
     </div>
   );
