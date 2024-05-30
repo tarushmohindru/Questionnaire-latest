@@ -1,10 +1,19 @@
-import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from "@mui/icons-material";
 import wave from "./wave.svg";
 import { signup } from "../api";
 import { useNavigate } from "react-router-dom";
+import { jwtStore } from "../redux/store";
 
 const Container = styled(Box)({
   display: "flex",
@@ -111,20 +120,68 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [cPassword, setCPassword] = useState("");
   const [orgKey, setOrgKey] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+
+  function handleError(message) {
+    setError(true);
+    setErrorMessage(message);
+  }
+
+  function handleClose() {
+    setError(false);
+    setErrorMessage("");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`${username} ${password}`);
-    let res = await signup(username, password, cPassword, orgKey);
-    if (res.message == "OK") {
-      navigate("/home");
+    if (
+      username === "" ||
+      password === "" ||
+      cPassword === "" ||
+      orgKey === ""
+    ) {
+      handleError("All fields are mandatory");
     } else {
-      console.log(res);
+      console.log(`${username} ${password}`);
+      let res = await signup(username, password, cPassword, orgKey);
+      if (res.message == "OK") {
+        localStorage.setItem("jwt", res.token);
+        jwtStore.dispatch({
+          type: "jwt",
+          payload: res.token,
+        });
+        navigate("/home");
+      } else {
+        handleError(res.response.data.ERROR);
+      }
     }
   };
+
+  useEffect(() => {
+    let jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      jwtStore.dispatch({
+        type: "jwt",
+        payload: jwt,
+      });
+      navigate("/home");
+    }
+  });
+
   return (
     <Container>
+      <Snackbar
+        open={error}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       <LeftPane />
       <RightPane>
         <WelcomeText>Welcome! Please SignUp</WelcomeText>

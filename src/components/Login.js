@@ -1,5 +1,14 @@
-import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link, Modal } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link,
+  Modal,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from "@mui/icons-material";
 import wave from "./wave.svg";
@@ -125,32 +134,63 @@ const ErrorBox = styled(Box)({
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+
+  function handleError(message) {
+    setError(true);
+    setErrorMessage(message);
+  }
+
+  function handleClose() {
+    setError(false);
+    setErrorMessage("");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login submitted:", username, password);
-    let res = await login(username, password, "testorgkey");
-    if (res.message === "OK") {
-      jwtStore.dispatch({
-        type: "jwt",
-        payload: res.token,
-      });
-      navigate("/home");
+    if (username === "" || password === "") {
+      handleError("All fields are mandatory");
     } else {
-      setError("Invalid credentials, please try again");
-      setOpen(true);
+      console.log("Login submitted:", username, password);
+      let res = await login(username, password, "testorgkey");
+      if (res.message === "OK") {
+        localStorage.setItem("jwt", res.token);
+        jwtStore.dispatch({
+          type: "jwt",
+          payload: res.token,
+        });
+        navigate("/home");
+      } else {
+        handleError(res.response.data.ERROR);
+      }
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    let jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      jwtStore.dispatch({
+        type: "jwt",
+        payload: jwt,
+      });
+      navigate("/home");
+    }
+  });
 
   return (
     <Container>
+      <Snackbar
+        open={error}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       <LeftPane />
       <RightPane>
         <WelcomeText>Welcome! Please login</WelcomeText>
@@ -184,14 +224,6 @@ const Login = () => {
             </NextButton>
           </form>
         </LoginForm>
-        <ErrorModal open={open} onClose={handleClose}>
-          <ErrorBox>
-            <Typography variant="h6" color="error">
-              {error}
-            </Typography>
-            <Button onClick={handleClose}>Close</Button>
-          </ErrorBox>
-        </ErrorModal>
       </RightPane>
     </Container>
   );

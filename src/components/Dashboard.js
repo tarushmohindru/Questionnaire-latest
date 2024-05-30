@@ -6,6 +6,7 @@ import {
   Typography,
   LinearProgress,
 } from "@mui/material";
+import "./Dashboard.css";
 import { Add as AddIcon } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import PrintIcon from "./directbox-notif.svg";
@@ -141,6 +142,11 @@ const Dashboard = () => {
     navigate(`/questionnare?id=${res.qid}`);
   };
 
+  function handleLogout() {
+    localStorage.removeItem("jwt");
+    navigate("/");
+  }
+
   useEffect(() => {
     const unsubscribe = jwtStore.subscribe(() => {
       const newJwt = jwtStore.getState();
@@ -159,6 +165,16 @@ const Dashboard = () => {
     };
   }, [jwt]);
 
+  useEffect(() => {
+    if (!jwt) {
+      if (localStorage.getItem("jwt")) {
+        setJwt(localStorage.getItem("jwt"));
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
   return (
     <div style={{ padding: "32px" }}>
       <DashboardTitle
@@ -167,6 +183,12 @@ const Dashboard = () => {
       >
         Dashboard
       </DashboardTitle>
+      <button
+        className="absolute right-10 top-8 bg-dashred text-white p-2 rounded-lg"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
       <div
         style={{
           display: "grid",
