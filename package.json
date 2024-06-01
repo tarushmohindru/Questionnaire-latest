@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.15.17",
     "@mui/material": "^5.15.17",
     "@mui/system": "^5.15.15",
+    "@react-pdf/renderer": "^3.4.4",
     "@testing-library/jest-dom": "^6.4.5",
     "axios": "^1.6.8",
     "postcss-cli": "^11.0.0",

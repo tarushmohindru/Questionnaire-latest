@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Questionnaire from "./components/Questionnaire";
 import Signup from "./components/Signup";
+import Report from "./components/report";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/home" element={<Dashboard />} />
         <Route path="/questionnare" element={<Questionnaire />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/report" element={<Report />} />
       </Routes>
     </BrowserRouter>
   );

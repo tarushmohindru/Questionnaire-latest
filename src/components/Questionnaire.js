@@ -30,7 +30,7 @@ import TextQuestion from "./TextQuestion";
 import GridQuestion from "./GridQuestion";
 import { getQByQID, saveAnswer } from "../api";
 import { jwtStore, gridStore, answerStore, solnStore } from "../redux/store";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./styles.css";
@@ -67,7 +67,9 @@ const Questionnaire = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageTitle, setPageTitle] = useState("");
   const [answerObject, setAnswerObject] = useState("");
+  const [jwt, setJwt] = useState("");
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
   const pdfContainerRef = useRef(null);
   const API_KEY = "AIzaSyCtqidSRsI2NhNP-vQrx1Ixq0gQHcH_eUM";
   const CX = "60cbe814015d24004";
@@ -117,7 +119,7 @@ const Questionnaire = () => {
   };
 
   const handleCloseDialog = () => {
-    setOpenDialog(false);
+    navigate(`/report?id=${searchParams.get("id")}`);
   };
 
   const toggleSearchBar = () => {
@@ -460,10 +462,13 @@ const Questionnaire = () => {
     }
   };
 
+  jwtStore.subscribe(() => {
+    setJwt(jwtStore.getState());
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const id = searchParams.get("id");
-      const jwt = jwtStore.getState();
       if (id && jwt) {
         await getQ(id, jwt);
       } else {
@@ -471,19 +476,17 @@ const Questionnaire = () => {
       }
     };
 
-    fetchData();
-  }, [searchParams]);
+    if (jwt != "") {
+      fetchData();
+    }
+  }, [jwt]);
 
   answerStore.subscribe(() => {
     setAnswerObject(answerStore.getState());
   });
 
   const save = async (payload) => {
-    let res = await saveAnswer(
-      searchParams.get("id"),
-      jwtStore.getState(),
-      payload
-    );
+    let res = await saveAnswer(searchParams.get("id"), jwt, payload);
   };
 
   useEffect(() => {
@@ -515,6 +518,20 @@ const Questionnaire = () => {
       }
     }
   }, [currentQuestion, questions]);
+
+  jwtStore.subscribe(() => {
+    setJwt(jwtStore.getState());
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem("jwt")) {
+      setJwt(localStorage.getItem("jwt"));
+      jwtStore.dispatch({
+        type: "jwt",
+        payload: localStorage.getItem("jwt"),
+      });
+    }
+  }, []);
 
   return (
     <div
