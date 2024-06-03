@@ -12,7 +12,9 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import { answerStore, gridStore, solnStore } from "../redux/store";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import { answerStore, gridStore } from "../redux/store";
 
 const formStyles = {
   container: {
@@ -74,6 +76,14 @@ const formStyles = {
   },
 };
 
+const CustomRadio = (props) => (
+  <Radio
+    {...props}
+    icon={<RadioButtonUncheckedIcon />}
+    checkedIcon={<CheckCircleIcon sx={{ color: 'orange' }}/>}
+  />
+);
+
 const GridQuestion = () => {
   const [selectedOption, setSelectedOption] = useState({});
   const [title, setTitle] = useState("");
@@ -86,16 +96,11 @@ const GridQuestion = () => {
       type: "answer_object",
       payload: { ...selectedOption, [item.name]: selected },
     });
+    console.log({ ...selectedOption, [item.name]: selected });
   };
 
   const getCellBackgroundColor = (item, option) => {
     return selectedOption[item.name] === option ? "#E9DFDA" : "white";
-  };
-
-  const handlePreSelectAnswers = () => {
-    if (solnStore.getState()) {
-      setSelectedOption(solnStore.getState());
-    }
   };
 
   useEffect(() => {
@@ -105,7 +110,6 @@ const GridQuestion = () => {
       setOptions(state.options);
       setColumns(state.columns);
     });
-    handlePreSelectAnswers();
     return () => unsubscribe();
   }, []);
 
@@ -145,7 +149,7 @@ const GridQuestion = () => {
                     >
                       <FormControlLabel
                         control={
-                          <Radio
+                          <CustomRadio
                             checked={selectedOption[column] === option}
                             onChange={() =>
                               handleOptionChange({ name: column }, option)

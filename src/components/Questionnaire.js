@@ -112,6 +112,14 @@ const Questionnaire = () => {
     setCompletedSections(completedSections + 1);
     setOpenDialog(true);
     console.log(generateJsonOutput());
+
+    // Save answer and navigate to report page
+    save({
+      answer_id: currentQID,
+      answer_object: answerObject,
+    }).then(() => {
+      navigate(`/report?id=${searchParams.get("id")}`);
+    });
   };
 
   const handleSaveAndExit = () => {
