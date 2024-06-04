@@ -117,8 +117,6 @@ const Questionnaire = () => {
     save({
       answer_id: currentQID,
       answer_object: answerObject,
-    }).then(() => {
-      navigate(`/report?id=${searchParams.get("id")}`);
     });
   };
 
@@ -127,7 +125,11 @@ const Questionnaire = () => {
   };
 
   const handleCloseDialog = () => {
-    navigate(`/report?id=${searchParams.get("id")}`);
+    if (currentQuestion + 1 != questions.length) {
+      navigate("/");
+    } else {
+      navigate(`/report?id=${searchParams.get("id")}`);
+    }
   };
 
   const toggleSearchBar = () => {

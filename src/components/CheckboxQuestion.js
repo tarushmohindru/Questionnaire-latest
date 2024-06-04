@@ -13,9 +13,9 @@ const CheckboxQuestion = ({ question, options }) => {
   const [answers, setAnswers] = useState({});
 
   solnStore.subscribe(() => {
-    if (solnStore.getState()) {
-      setAnswers(solnStore.getState());
-    }
+    let state = solnStore.getState();
+    console.log(solnStore.getState());
+    setAnswers({ ...state });
   });
 
   useEffect(() => {
@@ -23,6 +23,10 @@ const CheckboxQuestion = ({ question, options }) => {
       setAnswers({ ...answers, [option]: false });
     });
   }, []);
+
+  useEffect(() => {
+    console.log(answers);
+  }, [answers]);
 
   return (
     <Box
@@ -58,6 +62,7 @@ const CheckboxQuestion = ({ question, options }) => {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      checked={answers[option] ? answers[option] : false}
                       sx={{ color: "#232120" }}
                       onChange={(e) => {
                         setAnswers({ ...answers, [option]: e.target.checked });
@@ -66,7 +71,6 @@ const CheckboxQuestion = ({ question, options }) => {
                           payload: { ...answers, [option]: e.target.checked },
                         });
                       }}
-                      checked={answers[option] ? answers[option] : false}
                     />
                   }
                   label={option}
