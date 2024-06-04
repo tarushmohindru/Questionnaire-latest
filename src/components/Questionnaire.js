@@ -126,8 +126,6 @@ const Questionnaire = () => {
     save({
       answer_id: currentQID,
       answer_object: answerObject,
-    }).then(() => {
-      navigate(`/report?id=${searchParams.get("id")}`);
     });
   };
 
