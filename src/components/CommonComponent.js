@@ -12,7 +12,7 @@ const CommonComponent = ({ handleNext }) => {
       justifyContent="center"
       minHeight="100vh"
       minWidth="200vh"
-      bgcolor="#333230"
+      bgcolor="#232120"
     >
       <Box width="50%" maxWidth="800px" mb={4} p={2} bgcolor="#232120" borderRadius="8px">
         <BarChart />

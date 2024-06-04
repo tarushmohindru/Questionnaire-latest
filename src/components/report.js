@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Document,
   Page,
@@ -12,7 +12,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { getQByQID } from "../api";
 import inter from "../fonts/Inter-ExtraLight.ttf";
-import chartImage from "../logo.svg";
+import BubbleChart from "./BubbleChart";
 
 Font.register({
   family: "inter",
@@ -63,6 +63,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  smallChartContainer: {
+    width: "40%",
+    height: "auto",
+    marginLeft: "auto",
+    marginRight: 0,
+  },
   referenceTable: {
     width: "100%",
     marginTop: 10,
@@ -105,6 +111,7 @@ const Report = () => {
   const [id, setId] = useState("");
   const [data, setData] = useState({});
   const [searchParams] = useSearchParams();
+  const [chartImage, setChartImage] = useState("");
 
   const getQ = async (id, jwt) => {
     const res = await getQByQID(id, jwt);
@@ -127,108 +134,127 @@ const Report = () => {
     }
   }, [id, jwt]);
 
+  const handleImageGenerated = useCallback((image) => {
+    setChartImage(image);
+  }, []);
+
   return (
-    <PDFViewer style={{ width: "100%", height: "100vh" }}>
-      <Document>
-        <Page size="A4" style={styles.page}>
-          <View style={styles.section}>
-            <Text style={styles.title}>{data.company_name || "Global Company LLC"}</Text>
-            <Text style={styles.subtitle}>Time frame of analysis: {data.time_frame || "2024-2029"}</Text>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>Report Summary:</Text>
-              <View style={styles.dynamicField}>
-                <Text>Blank, user-editable text areas, in future server-generated text may go here. Rich text formatting: bold, italic, underline, and hyperlink.</Text>
-              </View>
+    <>
+      <BubbleChart onImageGenerated={handleImageGenerated} />
+      <PDFViewer style={{ width: "100%", height: "100vh" }}>
+        <Document>
+          <Page size="A4" style={styles.page}>
+            <View style={styles.section}>
+              <Text style={styles.title}>{data.company_name || "Global Company LLC"}</Text>
+              <Text style={styles.subtitle}>Time frame of analysis: {data.time_frame || "2024-2029"}</Text>
             </View>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>Context:</Text>
-              <View style={styles.dynamicField}>
-                <Text>Research framework and methodologies</Text>
-              </View>
-              <View style={styles.dynamicField}>
-                <Text>Case-specific notes</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>Analysis:</Text>
-              <View style={styles.dynamicField}>
-                <Text>Performance Analysis</Text>
-              </View>
-              <View style={styles.dynamicField}>
-                <Text>Confidence Analysis</Text>
-              </View>
-              <View style={[styles.dynamicField, { height: 50 }]}>
-                <Text>Opinion</Text>
-              </View>
-              <View style={styles.chartContainer}>
-                <Image src={chartImage} style={{ width: '50%', height: '100%' }} />
-              </View>
-            </View>
-          </View>
-          <View style={styles.updateInfo}>
-            <Text style={styles.text}>Last update: 2024-04-01 09:15</Text>
-            <Text style={styles.text}>Current print: 2024-05-23 08:00</Text>
-          </View>
-          <Text style={styles.pageNum}>Page: 1 of 2</Text>
-        </Page>
-        <Page size="A4" style={styles.page}>
-          <View style={styles.section}>
-            <Text style={styles.title}>{data.company_name || "Global Company LLC"}</Text>
-            <Text style={styles.subtitle}>Time frame of analysis: {data.time_frame || "2024-2029"}</Text>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>Analysis continued:</Text>
-              <View style={[styles.dynamicField, { height: 150 }]}>
-                <Text>Opinion (continued):</Text>
-              </View>
-              <View style={styles.chartContainer}>
-                <Image src={chartImage} style={{ width: '50%', height: '100%' }} />
-              </View>
-            </View>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>Conclusion:</Text>
-              <View style={[styles.dynamicField, { height: 60 }]}></View>
-            </View>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.heading}>References:</Text>
-              <View style={styles.referenceTable}>
-                <View style={styles.tableRow}>
-                  <Text style={styles.tableCell}>S/N</Text>
-                  <Text style={styles.tableCell}># refs</Text>
-                  <Text style={styles.tableCell}>Document</Text>
-                </View>
-                <View style={styles.tableRow}>
-                  <Text style={styles.tableCell}>1</Text>
-                  <Text style={styles.tableCell}>17</Text>
-                  <Text style={styles.tableCell}>Global Company LLC Annual Report 2023</Text>
-                </View>
-                <View style={styles.tableRow}>
-                  <Text style={styles.tableCell}>2</Text>
-                  <Text style={styles.tableCell}>5</Text>
-                  <Text style={styles.tableCell}>Global Company LLC CSR report 2022</Text>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>Report Summary:</Text>
+                <View style={styles.dynamicField}>
+                  <Text>Blank, user-editable text areas, in future server-generated text may go here. Rich text formatting: bold, italic, underline, and hyperlink.</Text>
                 </View>
               </View>
             </View>
-          </View>
-          <View style={styles.updateInfo}>
-            <Text style={styles.text}>Last update: 2024-04-01 09:15</Text>
-            <Text style={styles.text}>Current print: 2024-05-23 08:00</Text>
-          </View>
-          <Text style={styles.pageNum}>Page: 2 of 2</Text>
-        </Page>
-      </Document>
-    </PDFViewer>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>Context:</Text>
+                <View style={styles.dynamicField}>
+                  <Text>Research framework and methodologies</Text>
+                </View>
+                <View style={styles.dynamicField}>
+                  <Text>Case-specific notes</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>Analysis:</Text>
+                <View style={styles.dynamicField}>
+                  <Text>Performance Analysis</Text>
+                </View>
+                <View style={styles.dynamicField}>
+                  <Text>Confidence Analysis</Text>
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={[styles.dynamicField, { height: 50, flex: 1 }]}>
+                    <Text>Opinion</Text>
+                  </View>
+                  <View style={styles.smallChartContainer}>
+                    {chartImage ? (
+                      <Image src={chartImage} style={{ width: "100%", height: "auto" }} />
+                    ) : (
+                      <Text>Loading chart...</Text>
+                    )}
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={styles.updateInfo}>
+              <Text style={styles.text}>Last update: 2024-04-01 09:15</Text>
+              <Text style={styles.text}>Current print: 2024-05-23 08:00</Text>
+            </View>
+            <Text style={styles.pageNum}>Page: 1 of 2</Text>
+          </Page>
+          <Page size="A4" style={styles.page}>
+            <View style={styles.section}>
+              <Text style={styles.title}>{data.company_name || "Global Company LLC"}</Text>
+              <Text style={styles.subtitle}>Time frame of analysis: {data.time_frame || "2024-2029"}</Text>
+            </View>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>Analysis continued:</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={[styles.dynamicField, { height: 150, flex: 1 }]}>
+                    <Text>Opinion (continued):</Text>
+                  </View>
+                  <View style={styles.smallChartContainer}>
+                    {chartImage ? (
+                      <Image src={chartImage} style={{ width: "100%", height: "auto" }} />
+                    ) : (
+                      <Text>Loading chart...</Text>
+                    )}
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>Conclusion:</Text>
+                <View style={[styles.dynamicField, { height: 60 }]}></View>
+              </View>
+            </View>
+            <View style={styles.section}>
+              <View style={styles.headerContainer}>
+                <Text style={styles.heading}>References:</Text>
+                <View style={styles.referenceTable}>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableCell}>S/N</Text>
+                    <Text style={styles.tableCell}># refs</Text>
+                    <Text style={styles.tableCell}>Document</Text>
+                  </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableCell}>1</Text>
+                    <Text style={styles.tableCell}>17</Text>
+                    <Text style={styles.tableCell}>Global Company LLC Annual Report 2023</Text>
+                  </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableCell}>2</Text>
+                    <Text style={styles.tableCell}>5</Text>
+                    <Text style={styles.tableCell}>Global Company LLC CSR report 2022</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={styles.updateInfo}>
+              <Text style={styles.text}>Last update: 2024-04-01 09:15</Text>
+              <Text style={styles.text}>Current print: 2024-05-23 08:00</Text>
+            </View>
+            <Text style={styles.pageNum}>Page: 2 of 2</Text>
+          </Page>
+        </Document>
+      </PDFViewer>
+    </>
   );
 };
 
