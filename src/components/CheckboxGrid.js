@@ -13,7 +13,7 @@ import {
   Box,
   Checkbox,
 } from "@mui/material";
-import { answerStore, gridStore } from "../redux/store";
+import { answerStore, gridStore, solnStore } from "../redux/store";
 
 const formStyles = {
   container: {
@@ -106,6 +106,11 @@ const CheckboxGridQuestion = () => {
     return selectedOption[item.name] === option ? "#E9DFDA" : "white";
   };
 
+  solnStore.subscribe(() => {
+    let state = solnStore.getState();
+    setSelectedOption({ ...selectedOption, ...state });
+  });
+
   useEffect(() => {
     const unsubscribe = gridStore.subscribe(() => {
       const state = gridStore.getState();
@@ -153,13 +158,20 @@ const CheckboxGridQuestion = () => {
                       <FormControlLabel
                         control={
                           <Checkbox
-                            onChange={(e) =>
+                            checked={
+                              selectedOption[column]
+                                ? selectedOption[column][option]
+                                  ? selectedOption[column][option].selected
+                                  : false
+                                : false
+                            }
+                            onChange={(e) => {
                               handleOptionChange(
                                 { name: column },
                                 option,
                                 e.target.checked
-                              )
-                            }
+                              );
+                            }}
                             value={option}
                             name={column}
                           />

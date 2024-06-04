@@ -12,9 +12,9 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import { answerStore, gridStore } from "../redux/store";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import { answerStore, gridStore, solnStore } from "../redux/store";
 
 const formStyles = {
   container: {
@@ -80,7 +80,7 @@ const CustomRadio = (props) => (
   <Radio
     {...props}
     icon={<RadioButtonUncheckedIcon />}
-    checkedIcon={<CheckCircleIcon sx={{ color: 'orange' }}/>}
+    checkedIcon={<CheckCircleIcon sx={{ color: "orange" }} />}
   />
 );
 
@@ -102,6 +102,11 @@ const GridQuestion = () => {
   const getCellBackgroundColor = (item, option) => {
     return selectedOption[item.name] === option ? "#E9DFDA" : "white";
   };
+
+  solnStore.subscribe(() => {
+    let state = solnStore.getState();
+    setSelectedOption({ ...selectedOption, ...state });
+  });
 
   useEffect(() => {
     const unsubscribe = gridStore.subscribe(() => {
