@@ -1,42 +1,61 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { scoreStore } from "../redux/store";
 
-const progressData = [
-  { value: 8, total: 12, color: '#FFA500' },
-  { value: 5, total: 12, color: '#00FF00' },
-  { value: 11, total: 12, color: '#00FFFF' },
-  { value: 4, total: 12, color: '#800080' },
-];
+const scores = {
+  Confidence: { E: 85, S: 90, G: 80 },
+  Performance: { E: 88, S: 85, G: 87 },
+};
 
-const ProgressCircles = () => {
+const ScoreGrid = () => {
+  const [data, setData] = useState({});
+
+  scoreStore.subscribe(() => {
+    setData(scoreStore.getState());
+  });
+
+  useEffect(() => {
+    setData(scoreStore.getState());
+  }, []);
   return (
-    <Box display="flex" justifyContent="space-around" width="100%">
-      {progressData.map((data, index) => (
-        <Box key={index} position="relative" display="flex" alignItems="center" justifyContent="center">
-          <svg width="100" height="100">
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              stroke={data.color}
-              strokeWidth="10"
-              fill="none"
-              strokeDasharray={`${(data.value / data.total) * 283} 283`}
-              transform="rotate(-90 50 50)"
-            />
-          </svg>
-          <Typography
-            variant="h6"
-            component="div"
-            position="absolute"
-            color="white"
-          >
-            {`${data.value}/${data.total}`}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
+    data.e_conf && (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "10px",
+          textAlign: "center",
+        }}
+      >
+        {/* Header row */}
+        <div></div>
+        <div>
+          <strong>E</strong>
+        </div>
+        <div>
+          <strong>S</strong>
+        </div>
+        <div>
+          <strong>G</strong>
+        </div>
+
+        {/* Confidence row */}
+        <div>
+          <strong>Confidence</strong>
+        </div>
+        <div>{data.e_conf.toFixed(2)}</div>
+        <div>{data.s_conf.toFixed(2)}</div>
+        <div>{data.g_conf.toFixed(2)}</div>
+
+        {/* Performance row */}
+        <div>
+          <strong>Performance</strong>
+        </div>
+        <div>{data.e_perf.toFixed(2)}</div>
+        <div>{data.s_perf.toFixed(2)}</div>
+        <div>{data.s_perf.toFixed(2)}</div>
+      </div>
+    )
   );
 };
 
-export default ProgressCircles;
+export default ScoreGrid;

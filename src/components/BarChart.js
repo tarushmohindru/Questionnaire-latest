@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -7,26 +7,51 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
-} from 'recharts';
-
-const barData = [
-  { name: 'value 1', value: 12 },
-  { name: 'value 2', value: 8 },
-  { name: 'value 3', value: 4 },
-  { name: 'value 4', value: 6 },
-];
+  ResponsiveContainer,
+} from "recharts";
+import { scoreStore } from "../redux/store";
 
 const BarChart = () => {
+  const [barData, setBarData] = useState([]);
+  scoreStore.subscribe(() => {
+    let state = scoreStore.getState();
+    console.log(state.e_perf);
+    setBarData([
+      { name: "E Perf", value: state.e_perf },
+      { name: "E Conf", value: state.e_conf },
+      { name: "E Weight", value: state.e_weight },
+      { name: "G Perf", value: state.g_perf },
+      { name: "G Conf", value: state.g_conf },
+      { name: "G Weight", value: state.g_weight },
+      { name: "S Perf", value: state.s_perf },
+      { name: "S Conf", value: state.s_conf },
+      { name: "S Weight", value: state.s_weight },
+    ]);
+  });
+
+  useEffect(() => {
+    let state = scoreStore.getState();
+    setBarData([
+      { name: "E Perf", value: state.e_perf },
+      { name: "E Conf", value: state.e_conf },
+      { name: "E Weight", value: state.e_weight },
+      { name: "G Perf", value: state.g_perf },
+      { name: "G Conf", value: state.g_conf },
+      { name: "G Weight", value: state.g_weight },
+      { name: "S Perf", value: state.s_perf },
+      { name: "S Conf", value: state.s_conf },
+      { name: "S Weight", value: state.s_weight },
+    ]);
+  }, []);
   return (
     <Box width="100%" display="flex" flexDirection="column" alignItems="center">
       <ResponsiveContainer width="100%" height={300}>
         <RechartsBarChart data={barData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" stroke="#ffffff" />
-          <YAxis stroke="#ffffff" domain={[0, 12]} />
+          <YAxis stroke="#ffffff" domain={[0, 10]} />
           <Tooltip />
-          <Bar dataKey="value" fill="#00FFFF" barSize={30} />
+          <Bar dataKey="value" fill="#FFBC58" barSize={30} />
         </RechartsBarChart>
       </ResponsiveContainer>
     </Box>

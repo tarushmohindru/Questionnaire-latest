@@ -14,6 +14,8 @@ import {
   InputBase,
   IconButton,
   Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -29,11 +31,18 @@ import ScaleQuestion from "./ScaleQuestion";
 import TextQuestion from "./TextQuestion";
 import GridQuestion from "./GridQuestion";
 import { getQByQID, saveAnswer } from "../api";
-import { jwtStore, gridStore, answerStore, solnStore } from "../redux/store";
+import {
+  jwtStore,
+  gridStore,
+  answerStore,
+  solnStore,
+  scoreStore,
+} from "../redux/store";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./styles.css";
+import InfoIcon from "@mui/icons-material/Info";
 import CheckboxGridQuestion from "./CheckboxGrid";
 import CommonComponent from "./CommonComponent";
 
@@ -58,6 +67,7 @@ const Questionnaire = () => {
   const [isReferenceTableOpen, setIsReferenceTableOpen] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
   const [isPdfOpen, setIsPdfOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [pdfSearchQuery, setPdfSearchQuery] = useState("");
   const [numPages, setNumPages] = useState(null);
   const [searchSummary, setSearchSummary] = useState([]);
@@ -69,6 +79,9 @@ const Questionnaire = () => {
   const [pageTitle, setPageTitle] = useState("");
   const [answerObject, setAnswerObject] = useState("");
   const [jwt, setJwt] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [sectionDesc, setSectionDesc] = useState("");
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const pdfContainerRef = useRef(null);
@@ -88,13 +101,22 @@ const Questionnaire = () => {
     PARAGRAPH_TEXT: TextQuestion,
   };
 
+  function handleError(message) {
+    setError(true);
+    setErrorMessage(message);
+  }
+
+  function handleClose() {
+    setError(false);
+    setErrorMessage("");
+  }
+
   const handleNext = () => {
     saveCurrentReferences();
-    if (currentQuestion < questions.length - 1) {
-      setShowCommonComponent(true);
-    } else {
-      handleSubmit();
-    }
+    save({
+      answer_id: currentQID,
+      answer_object: answerObject,
+    });
   };
 
   const handleCommonNext = () => {
@@ -104,10 +126,6 @@ const Questionnaire = () => {
       setCompletedSections(completedSections + 1);
       loadReferencesForQuestion(currentQuestion + 1);
     }
-    save({
-      answer_id: currentQID,
-      answer_object: answerObject,
-    });
   };
 
   const handleBack = () => {
@@ -137,7 +155,13 @@ const Questionnaire = () => {
     if (currentQuestion + 1 != questions.length) {
       navigate("/");
     } else {
-      navigate(`/report?id=${searchParams.get("id")}`);
+      setSubmitted(true);
+      window.open(
+        `/report?id=${searchParams.get("id")}`,
+        "_blank",
+        "rel=noopener noreferrer"
+      );
+      navigate("/chart");
     }
   };
 
@@ -352,6 +376,15 @@ const Questionnaire = () => {
   };
 
   const questionTextStyles = {
+    color: "white",
+    fontWeight: "normal",
+    marginBottom: "10px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+  };
+  const descStyles = {
     color: "#A6A4A3",
     fontWeight: "normal",
     marginBottom: "10px",
@@ -506,6 +539,32 @@ const Questionnaire = () => {
 
   const save = async (payload) => {
     let res = await saveAnswer(searchParams.get("id"), jwt, payload);
+    if (res.status === "ok") {
+      gridStore.dispatch({
+        type: "grid",
+        payload: {
+          options: [],
+          columns: [],
+        },
+      });
+      scoreStore.dispatch({
+        type: "scores",
+        payload: res.model.scores,
+      });
+      if (currentQuestion < questions.length - 1) {
+        if (questions[currentQuestion + 1].type === "SECTION_HEADER") {
+          setShowCommonComponent(true);
+        } else {
+          setcurrentQuestion(currentQuestion + 1);
+          setCompletedSections(completedSections + 1);
+          loadReferencesForQuestion(currentQuestion + 1);
+        }
+      } else {
+        handleSubmit();
+      }
+    } else {
+      handleError("This field is required");
+    }
   };
 
   useEffect(() => {
@@ -531,6 +590,7 @@ const Questionnaire = () => {
       let ques = questions[currentQuestion];
       if (ques.type === "SECTION_HEADER") {
         setCurrentSection(ques.itemTitle);
+        setSectionDesc(ques.description);
         setcurrentQuestion(currentQuestion + 1);
       } else if (ques.type === "PAGE_BREAK") {
         setcurrentQuestion(currentQuestion + 1);
@@ -564,8 +624,21 @@ const Questionnaire = () => {
         overflow: "hidden",
       }}
     >
+      <Snackbar
+        open={error}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       {showCommonComponent ? (
-        <CommonComponent handleNext={handleCommonNext} />
+        <CommonComponent
+          handleNext={handleCommonNext}
+          section={currentSection}
+        />
       ) : (
         <>
           {(isSearchOpen || isPdfOpen || isReferenceTableOpen) && (
@@ -651,7 +724,10 @@ const Questionnaire = () => {
                                 href={result.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: "#FDFBFA", textDecoration: "none" }}
+                                style={{
+                                  color: "#FDFBFA",
+                                  textDecoration: "none",
+                                }}
                               >
                                 <Typography
                                   variant="h6"
@@ -767,7 +843,10 @@ const Questionnaire = () => {
                       renderMode="canvas"
                     >
                       {Array.from(new Array(numPages), (el, index) => (
-                        <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                        <Page
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                        />
                       ))}
                     </Document>
                   </div>
@@ -842,7 +921,10 @@ const Questionnaire = () => {
                               href={reference.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: "#FDFBFA", textDecoration: "none" }}
+                              style={{
+                                color: "#FDFBFA",
+                                textDecoration: "none",
+                              }}
                             >
                               {reference.link}
                             </a>
@@ -873,6 +955,11 @@ const Questionnaire = () => {
                 {questions.length === 0
                   ? ""
                   : questions[currentQuestion].itemTitle}
+              </Typography>
+              <Typography variant="h6" style={{ ...descStyles }}>
+                {questions.length === 0
+                  ? ""
+                  : questions[currentQuestion].description}
               </Typography>
               <div
                 style={{
@@ -978,7 +1065,10 @@ const Questionnaire = () => {
                               href={reference.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: "#FDFBFA", textDecoration: "none" }}
+                              style={{
+                                color: "#FDFBFA",
+                                textDecoration: "none",
+                              }}
                             >
                               {reference.link}
                             </a>
@@ -1052,7 +1142,10 @@ const Questionnaire = () => {
             </div>
             <div style={progressBarContainerStyles}>
               <div
-                style={{ ...progressFillStyles, width: `${progressPercentage}%` }}
+                style={{
+                  ...progressFillStyles,
+                  width: `${progressPercentage}%`,
+                }}
               ></div>
               <div
                 style={{
@@ -1061,6 +1154,20 @@ const Questionnaire = () => {
                   opacity: 1,
                 }}
               >
+                {currentSection != "" && (
+                  <Tooltip
+                    title={
+                      <Typography variant="body2" style={{ fontSize: "36" }}>
+                        {sectionDesc}
+                      </Typography>
+                    }
+                    arrow
+                  >
+                    <IconButton>
+                      <InfoIcon sx={{ color: "white" }} />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 {currentSection}
               </div>
             </div>
@@ -1146,7 +1253,11 @@ const Questionnaire = () => {
               color="primary"
               startIcon={
                 <CloseIcon
-                  style={{ color: "#A4A1A0", fontSize: 30, marginRight: "-5px" }}
+                  style={{
+                    color: "#A4A1A0",
+                    fontSize: 30,
+                    marginRight: "-5px",
+                  }}
                 />
               }
               onClick={handleSaveAndExit}
@@ -1172,7 +1283,10 @@ const Questionnaire = () => {
             </Button>
           </div>
           {isMenuOpen && (
-            <div style={menuContainerStyles} onClick={(e) => e.stopPropagation()}>
+            <div
+              style={menuContainerStyles}
+              onClick={(e) => e.stopPropagation()}
+            >
               <Button
                 onClick={() => handleMenuClick("openSearch")}
                 startIcon={<SearchIcon />}
@@ -1243,6 +1357,6 @@ const Questionnaire = () => {
       )}
     </div>
   );
-};  
+};
 
 export default Questionnaire;

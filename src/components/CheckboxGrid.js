@@ -109,6 +109,10 @@ const CheckboxGridQuestion = () => {
   solnStore.subscribe(() => {
     let state = solnStore.getState();
     setSelectedOption({ ...selectedOption, ...state });
+    answerStore.dispatch({
+      type: "answer_object",
+      payload: state,
+    });
   });
 
   useEffect(() => {

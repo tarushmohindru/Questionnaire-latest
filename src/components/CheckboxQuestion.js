@@ -16,6 +16,10 @@ const CheckboxQuestion = ({ question, options }) => {
     let state = solnStore.getState();
     console.log(solnStore.getState());
     setAnswers({ ...state });
+    answerStore.dispatch({
+      type: "answer_object",
+      payload: state,
+    });
   });
 
   useEffect(() => {

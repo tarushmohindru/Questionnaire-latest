@@ -20,7 +20,12 @@ const MultipleChoiceQuestion = ({ question, options }) => {
   };
 
   solnStore.subscribe(() => {
-    setAnswer(solnStore.getState());
+    let state = solnStore.getState();
+    setAnswer(state);
+    answerStore.dispatch({
+      type: "answer_object",
+      payload: state,
+    });
   });
   return (
     <Box

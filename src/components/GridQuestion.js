@@ -106,9 +106,11 @@ const GridQuestion = () => {
   solnStore.subscribe(() => {
     let state = solnStore.getState();
     setSelectedOption({ ...selectedOption, ...state });
+    console.log(selectedOption);
   });
 
   useEffect(() => {
+    setSelectedOption({});
     const unsubscribe = gridStore.subscribe(() => {
       const state = gridStore.getState();
       setTitle(state.itemTitle);
@@ -116,7 +118,7 @@ const GridQuestion = () => {
       setColumns(state.columns);
     });
     return () => unsubscribe();
-  }, []);
+  }, [options]);
 
   return (
     <Box sx={formStyles.container}>

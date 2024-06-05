@@ -13,20 +13,12 @@ import PrintIcon from "./directbox-notif.svg";
 import Design from "./icon.svg";
 import { useNavigate } from "react-router-dom";
 import { getQList, getNewQ } from "../api";
-import { qStore, jwtStore } from "../redux/store";
+import { qStore, jwtStore, bubbleStore } from "../redux/store";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [jwt, setJwt] = useState(jwtStore.getState());
   const [questionnare, setQues] = useState([]);
-  const cards = [
-    { name: "John Doe", date: "2024-May-02 03:26 UTC", progress: 16 },
-    { name: "Adriel Maddox", date: "2024-May-02 14:22 UTC", progress: 24 },
-    { name: "Charley McClain", date: "2024-May-12 23:15 UTC", progress: 55 },
-    { name: "John Doe", date: "2024-May-02 03:26 UTC", progress: 30 },
-    { name: "Adriel Maddox", date: "2024-May-02 14:22 UTC", progress: 100 },
-    { name: "Charley McClain", date: "2024-May-12 23:15 UTC", progress: 63 },
-  ];
 
   const CustomCard = styled(Card)(({ theme }) => ({
     borderRadius: "2rem",

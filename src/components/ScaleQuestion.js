@@ -15,7 +15,12 @@ const ScaleQuestion = ({ question, minLabel, maxLabel }) => {
 
   solnStore.subscribe(() => {
     if (solnStore.getState()) {
-      setValue(solnStore.getState());
+      let state = solnStore.getState();
+      setValue(state);
+      answerStore.dispatch({
+        type: "answer_object",
+        payload: state,
+      });
     }
   });
 
