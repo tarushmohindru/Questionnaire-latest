@@ -206,6 +206,8 @@ const Login = () => {
                 setUsername(e.target.value);
               }}
               type="text" 
+              className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
             />
             <Label>Password</Label>
             <CustomTextField
@@ -216,6 +218,8 @@ const Login = () => {
                 setPassword(e.target.value);
               }}
               type="password"
+              className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
             />
             <SignupLink href="/signup" underline="hover">
               New user? Signup here

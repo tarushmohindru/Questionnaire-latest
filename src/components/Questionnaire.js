@@ -57,7 +57,7 @@ const Questionnaire = () => {
   const [questions, setQuestions] = useState([]);
   const [sectionHeaders, setSectionHeaders] = useState([]);
   const [currentQID, setCurrentQID] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(true); // Initialize as true
+  const [isSearchOpen, setIsSearchOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -802,45 +802,59 @@ const Questionnaire = () => {
                     width: "100%",
                     padding: "0 20px",
                     height: "calc(100% - 60px)",
-                    overflowX: "auto",
+                    overflowY: "auto",
                   }}
                 >
-                  <div>
-                    {searchSummary.map((result, index) => (
-                      <div
-                        key={index}
-                        style={{ marginBottom: "10px", color: "#4D4556" }}
-                      >
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={selectedPdfTexts.some(
-                                (item) =>
-                                  item.page === result.page &&
-                                  item.text === result.text
-                              )}
-                              onChange={() => handlePdfTextSelect(result)}
-                            />
-                          }
-                          label={
-                            <Typography variant="body2">
-                              Page {result.page}: {result.text}
-                            </Typography>
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <Document
-                    file={pdfFile}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    onLoadError={console.error}
-                    renderMode="canvas"
+                  <div
+                    style={{
+                      height: "calc(100vh - 200px)",
+                      overflowY: "auto",
+                      width: "100%",
+                    }}
                   >
-                    {Array.from(new Array(numPages), (el, index) => (
-                      <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-                    ))}
-                  </Document>
+                    <div>
+                      {searchSummary.map((result, index) => (
+                        <div
+                          key={index}
+                          style={{ marginBottom: "10px", color: "#4D4556" }}
+                        >
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={selectedPdfTexts.some(
+                                  (item) =>
+                                    item.page === result.page &&
+                                    item.text === result.text
+                                )}
+                                onChange={() => handlePdfTextSelect(result)}
+                              />
+                            }
+                            label={
+                              <Typography variant="body2">
+                                Page {result.page}: {result.text}
+                              </Typography>
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <Document
+                      file={pdfFile}
+                      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                      onLoadError={console.error}
+                      renderMode="canvas"
+                    >
+                      {Array.from(new Array(numPages), (el, index) => (
+                        <Page
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          width={pdfContainerRef.current
+                            ? pdfContainerRef.current.offsetWidth
+                            : 600}
+                        />
+                      ))}
+                    </Document>
+                  </div>
                 </div>
               </>
             )}

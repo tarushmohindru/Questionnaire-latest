@@ -191,14 +191,16 @@ const App = () => {
           <form onSubmit={handleSubmit}>
             <Label>Username</Label>
             <CustomTextField
-              placeholder="Username"
-              variant="outlined"
-              fullWidth
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-              type="text"
-            />
+        placeholder="Username"
+        variant="outlined"
+        fullWidth
+        onChange={(e) => {
+          setUsername(e.target.value);
+        }}
+        type="text"
+        className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
+      />
             <Label>Password</Label>
             <CustomTextField
               placeholder="Password"
@@ -208,6 +210,8 @@ const App = () => {
                 setPassword(e.target.value);
               }}
               type="password"
+              className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
             />
             <Label>Confirm Password</Label>
             <CustomTextField
@@ -218,6 +222,8 @@ const App = () => {
                 setCPassword(e.target.value);
               }}
               type="password"
+              className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
             />
             <Label>Access Key</Label>
             <CustomTextField
@@ -228,6 +234,8 @@ const App = () => {
                 setOrgKey(e.target.value);
               }}
               type="key"
+              className="custom-placeholder"
+        inputProps={{ style: { textIndent: '6px' } }} 
             />
             <SignupLink href="/" underline="hover">
               Already Registered? Login here
