@@ -1111,7 +1111,7 @@ const Questionnaire = () => {
                   onClick={handleSubmit}
                   className="icon-slide-right"
                   style={{
-                    backgroundColor: "#A9A7FF",
+                    backgroundColor: "#449082",
                     color: "white",
                     marginTop: "20px",
                     width: "200px",
@@ -1119,7 +1119,7 @@ const Questionnaire = () => {
                     fontSize: "16px",
                     display: "block",
                     margin: "20px auto 40px auto",
-                    border: "1px solid #A851FF",
+                    border: "1px solid #449082",
                     fontFamily: "DM Sans, sans-serif",
                     boxShadow: "none",
                   }}
