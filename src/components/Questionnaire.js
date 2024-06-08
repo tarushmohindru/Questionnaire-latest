@@ -45,6 +45,7 @@ import "./styles.css";
 import InfoIcon from "@mui/icons-material/Info";
 import CheckboxGridQuestion from "./CheckboxGrid";
 import CommonComponent from "./CommonComponent";
+import { fontSize, lineHeight, textAlign } from "@mui/system";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -56,7 +57,7 @@ const Questionnaire = () => {
   const [questions, setQuestions] = useState([]);
   const [sectionHeaders, setSectionHeaders] = useState([]);
   const [currentQID, setCurrentQID] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(true); // Initialize as true
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -152,7 +153,7 @@ const Questionnaire = () => {
   };
 
   const handleCloseDialog = () => {
-    if (currentQuestion + 1 != questions.length) {
+    if (currentQuestion + 1 !== questions.length) {
       navigate("/");
     } else {
       setSubmitted(true);
@@ -169,6 +170,18 @@ const Questionnaire = () => {
     setIsSearchOpen(!isSearchOpen);
     setIsPdfOpen(false);
     setIsReferenceTableOpen(false);
+  };
+
+  const togglePdfUpload = () => {
+    setIsPdfOpen(!isPdfOpen);
+    setIsSearchOpen(false);
+    setIsReferenceTableOpen(false);
+  };
+
+  const toggleReferenceTable = () => {
+    setIsReferenceTableOpen(!isReferenceTableOpen);
+    setIsSearchOpen(false);
+    setIsPdfOpen(false);
   };
 
   const handleSearch = async (page = 1) => {
@@ -222,25 +235,6 @@ const Questionnaire = () => {
       })),
     ];
     setReferences(updatedReferences);
-  };
-
-  const handleMenuClick = (option) => {
-    switch (option) {
-      case "openSearch":
-        toggleSearchBar();
-        break;
-      case "uploadPDF":
-        fileInputRef.current.click();
-        break;
-      case "referenceTable":
-        setIsReferenceTableOpen(!isReferenceTableOpen);
-        setIsSearchOpen(false);
-        setIsPdfOpen(false);
-        break;
-      default:
-        break;
-    }
-    setIsMenuOpen(false);
   };
 
   const handlePdfUpload = (event) => {
@@ -359,11 +353,15 @@ const Questionnaire = () => {
   }, []);
 
   const questionStyles = {
-    backgroundColor: "#232120",
-    color: "#A4A1A0",
+    backgroundColor: "white",
+    color: "#4D4556",
+    textAlign: "center",
     padding: "20px",
     borderRadius: "8px",
+    marginTop: "10px",
     marginBottom: "20px",
+    fontFamily: "DM Sans, sans-serif",
+    transition: "all 10s ease",
   };
 
   const optionStyles = {
@@ -373,25 +371,29 @@ const Questionnaire = () => {
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const questionTextStyles = {
-    color: "white",
-    fontWeight: "normal",
+    color: "#4D4556",
+    fontWeight: "bold",
     marginBottom: "10px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
+    fontFamily: "DM Sans, sans-serif",
   };
   const descStyles = {
-    color: "#A6A4A3",
+    color: "#4D4556",
     fontWeight: "normal",
+    fontSize: "15px",
     marginBottom: "10px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const progressBarContainerStyles = {
@@ -401,8 +403,9 @@ const Questionnaire = () => {
     width: "100%",
     height: "40px",
     display: "flex",
-    backgroundColor: "#232120",
+    backgroundColor: "white",
     overflow: "hidden",
+    transition: "all 1s ease",
   };
 
   const progressBarSegmentStyles = {
@@ -416,6 +419,7 @@ const Questionnaire = () => {
     fontSize: "16px",
     position: "relative",
     zIndex: 1,
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const progressFillStyles = {
@@ -424,19 +428,20 @@ const Questionnaire = () => {
     left: 0,
     top: 0,
     transition: "width 0.3s ease",
-    backgroundColor: "#FFBC58",
+    backgroundColor: "#1EC8DF",
     zIndex: 0,
   };
 
   const referenceTableStyles = {
-    backgroundColor: "#232120",
+    backgroundColor: "white",
     color: "#A4A1A0",
     padding: "20px",
-    borderRadius: "8px",
+    borderRadius: "16px",
     marginTop: "15px",
     width: "90%",
     height: "calc(100% - 100px)",
     overflowY: "auto",
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const referenceTableHeaderStyles = {
@@ -445,10 +450,11 @@ const Questionnaire = () => {
     fontSize: "18px",
     marginBottom: "10px",
     textAlign: "center",
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const menuIconStyles = {
-    backgroundColor: "#444240",
+    backgroundColor: "#E5FFFC",
     borderRadius: "50%",
     padding: "10px",
     cursor: "pointer",
@@ -457,32 +463,19 @@ const Questionnaire = () => {
     justifyContent: "center",
     width: "50px",
     height: "50px",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-  };
-
-  const menuContainerStyles = {
-    position: "absolute",
-    top: "70px",
-    left: "20px",
-    backgroundColor: "#333230",
-    borderRadius: "8px",
-    padding: "10px",
-    zIndex: 1000,
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
+    transition: "background-color 0.3s ease",
   };
 
   const searchContainerStyles = {
-    backgroundColor: "#232120",
+    backgroundColor: "white",
     color: "#A4A1A0",
     padding: "20px",
-    borderRadius: "8px",
-    marginTop: "15px",
+    borderRadius: "20px",
+    marginTop: "25px",
     width: "90%",
     height: "calc(100% - 100px)",
     overflowY: "auto",
+    fontFamily: "DM Sans, sans-serif",
   };
 
   const getQ = async (id, jwt) => {
@@ -528,7 +521,7 @@ const Questionnaire = () => {
       }
     };
 
-    if (jwt != "") {
+    if (jwt !== "") {
       fetchData();
     }
   }, [jwt]);
@@ -616,12 +609,14 @@ const Questionnaire = () => {
     <div
       className="min-h-screen py-8 px-4 sm:px-6 lg:px-8"
       style={{
-        backgroundColor: "#232120",
+        backgroundColor: "white",
         color: "#A4A1A0",
         display: "flex",
         width: "100%",
         height: "100vh",
         overflow: "hidden",
+        fontFamily: "DM Sans, sans-serif",
+        transition: "all 10s ease",
       }}
     >
       <Snackbar
@@ -641,314 +636,324 @@ const Questionnaire = () => {
         />
       ) : (
         <>
-          {(isSearchOpen || isPdfOpen || isReferenceTableOpen) && (
-            <div
-              style={{
-                width: "33%",
-                backgroundColor: "#333230",
-                height: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                overflow: "hidden",
-                marginTop: "40px",
-              }}
-            >
-              {isSearchOpen && (
-                <div style={searchContainerStyles}>
-                  <div
-                    style={{
+          <div
+            style={{
+              width: "33%",
+              backgroundColor: "#E5FFFC",
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              overflow: "hidden",
+              fontFamily: "DM Sans, sans-serif",
+              borderRadius: "40px",
+              position: "fixed",
+              top: "80px",
+              left: "20px",
+            }}
+          >
+            {isSearchOpen && (
+              <div style={searchContainerStyles}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    marginTop: "10px",
+                  }}
+                >
+                  <Paper
+                    component="form"
+                    sx={{
+                      p: "2px 4px",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-between",
                       width: "90%",
-                      marginTop: "10px",
+                      margin: "0 auto",
+                    }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSearch(1);
                     }}
                   >
-                    <Paper
-                      component="form"
-                      sx={{
-                        p: "2px 4px",
-                        display: "flex",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
+                    <InputBase
+                      sx={{ ml: 1, flex: 1 }}
+                      placeholder="Search"
+                      inputProps={{ "aria-label": "search" }}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <IconButton
+                      type="button"
+                      sx={{ p: "10px" }}
+                      aria-label="search"
+                      onClick={() => handleSearch(1)}
                     >
-                      <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        placeholder="Search"
-                        inputProps={{ "aria-label": "search" }}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                      <SearchIcon />
+                    </IconButton>
+                  </Paper>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    marginTop: "20px",
+                    padding: "0 20px",
+                    overflowY: "auto",
+                    height: "80%",
+                  }}
+                >
+                  {searchResults.map((result, index) => (
+                    <div key={index} style={{ marginBottom: "20px" }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={selectedResults.includes(index)}
+                            onChange={() => handleResultSelect(index)}
+                          />
+                        }
+                        label={
+                          <div>
+                            <a
+                              href={result.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: "#4D4556",
+                                textDecoration: "none",
+                              }}
+                            >
+                              <Typography
+                                variant="h6"
+                                style={{ color: "#4D4556" }}
+                              >
+                                {result.title}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                style={{ color: "grey" }}
+                              >
+                                {result.snippet}
+                              </Typography>
+                            </a>
+                          </div>
+                        }
                       />
-                      <IconButton
-                        type="button"
-                        sx={{ p: "10px" }}
-                        aria-label="search"
-                        onClick={() => handleSearch(1)}
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                      <IconButton
-                        type="button"
-                        sx={{ p: "10px" }}
-                        aria-label="close"
-                        onClick={toggleSearchBar}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </Paper>
-                  </div>
-                  <div
-                    style={{
+                    </div>
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={(e, page) => handleSearch(page)}
+                    style={{ margin: "20px 0" }}
+                  />
+                )}
+              </div>
+            )}
+            {isPdfOpen && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "90%",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <Paper
+                    component="form"
+                    sx={{
+                      p: "2px 4px",
+                      display: "flex",
+                      alignItems: "center",
                       width: "100%",
-                      marginTop: "20px",
-                      padding: "0 20px",
-                      overflowY: "auto",
-                      height: "80%",
                     }}
                   >
-                    {searchResults.map((result, index) => (
-                      <div key={index} style={{ marginBottom: "20px" }}>
+                    <InputBase
+                      sx={{ ml: 1, flex: 1 }}
+                      placeholder="Search in PDF..."
+                      inputProps={{ "aria-label": "search in pdf" }}
+                      value={pdfSearchQuery}
+                      onChange={(e) => setPdfSearchQuery(e.target.value)}
+                    />
+                    <IconButton
+                      type="button"
+                      sx={{ p: "10px" }}
+                      aria-label="search"
+                      onClick={() => handlePdfSearch(pdfSearchQuery)}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                    <IconButton
+                      type="button"
+                      sx={{ p: "10px" }}
+                      aria-label="close"
+                      onClick={handlePdfClose}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </Paper>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    padding: "0 20px",
+                    height: "calc(100% - 60px)",
+                    overflowX: "auto",
+                  }}
+                >
+                  <div>
+                    {searchSummary.map((result, index) => (
+                      <div
+                        key={index}
+                        style={{ marginBottom: "10px", color: "#4D4556" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={selectedResults.includes(index)}
-                              onChange={() => handleResultSelect(index)}
+                              checked={selectedPdfTexts.some(
+                                (item) =>
+                                  item.page === result.page &&
+                                  item.text === result.text
+                              )}
+                              onChange={() => handlePdfTextSelect(result)}
                             />
                           }
                           label={
-                            <div>
-                              <a
-                                href={result.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  color: "#FDFBFA",
-                                  textDecoration: "none",
-                                }}
-                              >
-                                <Typography
-                                  variant="h6"
-                                  style={{ color: "#FDFBFA" }}
-                                >
-                                  {result.title}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  style={{ color: "#CAC9C8" }}
-                                >
-                                  {result.snippet}
-                                </Typography>
-                              </a>
-                            </div>
+                            <Typography variant="body2">
+                              Page {result.page}: {result.text}
+                            </Typography>
                           }
                         />
                       </div>
                     ))}
                   </div>
-                  {totalPages > 1 && (
-                    <Pagination
-                      count={totalPages}
-                      page={currentPage}
-                      onChange={(e, page) => handleSearch(page)}
-                      style={{ margin: "20px 0" }}
-                    />
-                  )}
+                  <Document
+                    file={pdfFile}
+                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                    onLoadError={console.error}
+                    renderMode="canvas"
+                  >
+                    {Array.from(new Array(numPages), (el, index) => (
+                      <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                    ))}
+                  </Document>
                 </div>
-              )}
-              {isPdfOpen && (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      width: "90%",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <Paper
-                      component="form"
-                      sx={{
-                        p: "2px 4px",
-                        display: "flex",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        placeholder="Search in PDF..."
-                        inputProps={{ "aria-label": "search in pdf" }}
-                        value={pdfSearchQuery}
-                        onChange={(e) => setPdfSearchQuery(e.target.value)}
-                      />
-                      <IconButton
-                        type="button"
-                        sx={{ p: "10px" }}
-                        aria-label="search"
-                        onClick={() => handlePdfSearch(pdfSearchQuery)}
+              </>
+            )}
+            {isReferenceTableOpen && (
+              <div style={referenceTableStyles}>
+                <Typography variant="h6" style={referenceTableHeaderStyles}>
+                  References
+                </Typography>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th
+                        style={{
+                          borderBottom: "1px solid #A6A4A3",
+                          paddingBottom: "10px",
+                          color: "#4D4556",
+                        }}
                       >
-                        <SearchIcon />
-                      </IconButton>
-                      <IconButton
-                        type="button"
-                        sx={{ p: "10px" }}
-                        aria-label="close"
-                        onClick={handlePdfClose}
+                        Select
+                      </th>
+                      <th
+                        style={{
+                          borderBottom: "1px solid #A6A4A3",
+                          paddingBottom: "10px",
+                          color: "#4D4556",
+                        }}
                       >
-                        <CloseIcon />
-                      </IconButton>
-                    </Paper>
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      padding: "0 20px",
-                      height: "calc(100% - 60px)",
-                      overflowX: "auto",
-                    }}
-                  >
-                    <div>
-                      {searchSummary.map((result, index) => (
-                        <div
-                          key={index}
-                          style={{ marginBottom: "10px", color: "#FDFBFA" }}
-                        >
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={selectedPdfTexts.some(
-                                  (item) =>
-                                    item.page === result.page &&
-                                    item.text === result.text
-                                )}
-                                onChange={() => handlePdfTextSelect(result)}
-                              />
-                            }
-                            label={
-                              <Typography variant="body2">
-                                Page {result.page}: {result.text}
-                              </Typography>
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <Document
-                      file={pdfFile}
-                      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                      onLoadError={console.error}
-                      renderMode="canvas"
-                    >
-                      {Array.from(new Array(numPages), (el, index) => (
-                        <Page
-                          key={`page_${index + 1}`}
-                          pageNumber={index + 1}
-                        />
-                      ))}
-                    </Document>
-                  </div>
-                </>
-              )}
-              {isReferenceTableOpen && (
-                <div style={referenceTableStyles}>
-                  <Typography variant="h6" style={referenceTableHeaderStyles}>
-                    References
-                  </Typography>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr>
-                        <th
+                        Search Result Title
+                      </th>
+                      <th
+                        style={{
+                          borderBottom: "1px solid #A6A4A3",
+                          paddingBottom: "10px",
+                          color: "#4D4556",
+                        }}
+                      >
+                        Preview Text
+                      </th>
+                      <th
+                        style={{
+                          borderBottom: "1px solid #A6A4A3",
+                          paddingBottom: "10px",
+                          color: "#4D4556",
+                        }}
+                      >
+                        Link
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {references.map((reference, index) => (
+                      <tr key={index}>
+                        <td
                           style={{
-                            borderBottom: "1px solid #A6A4A3",
-                            paddingBottom: "10px",
-                            color: "#A6A4A3",
+                            padding: "10px",
+                            textAlign: "center",
+                            color: "#4D4556",
                           }}
                         >
-                          Select
-                        </th>
-                        <th
-                          style={{
-                            borderBottom: "1px solid #A6A4A3",
-                            paddingBottom: "10px",
-                            color: "#A6A4A3",
-                          }}
-                        >
-                          Search Result Title
-                        </th>
-                        <th
-                          style={{
-                            borderBottom: "1px solid #A6A4A3",
-                            paddingBottom: "10px",
-                            color: "#A6A4A3",
-                          }}
-                        >
-                          Preview Text
-                        </th>
-                        <th
-                          style={{
-                            borderBottom: "1px solid #A6A4A3",
-                            paddingBottom: "10px",
-                            color: "#A6A4A3",
-                          }}
-                        >
-                          Link
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {references.map((reference, index) => (
-                        <tr key={index}>
-                          <td
+                          <Checkbox checked />
+                        </td>
+                        <td style={{ padding: "10px", color: "#4D4556" }}>
+                          {reference.title}
+                        </td>
+                        <td style={{ padding: "10px", color: "#4D4556" }}>
+                          {reference.snippet}
+                        </td>
+                        <td style={{ padding: "10px", color: "#4D4556" }}>
+                          <a
+                            href={reference.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             style={{
-                              padding: "10px",
-                              textAlign: "center",
-                              color: "#A6A4A3",
+                              color: "blue",
+                              textDecoration: "none",
                             }}
                           >
-                            <Checkbox checked />
-                          </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
-                            {reference.title}
-                          </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
-                            {reference.snippet}
-                          </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
-                            <a
-                              href={reference.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                color: "#FDFBFA",
-                                textDecoration: "none",
-                              }}
-                            >
-                              {reference.link}
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
+                            {reference.link}
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
           <div
             className="max-w-5xl mx-auto"
             style={{
               flex: "1",
+              backgroundColor: "2A2A2A",
               overflowY: "auto",
               height: "100vh",
               padding: "20px",
-              maxWidth: "90vw",
+              maxWidth: "60vw",
+              fontFamily: "DM Sans, sans-serif",
+              transition: "all 10s ease",
+              marginLeft: "33%",
             }}
           >
-            <Typography variant="h4" className="text-white text-center mb-8">
-              {pageTitle}
+            <Typography
+              variant="h4"
+              className="text-white text-center mb-8"
+              style={{
+                fontFamily: "DM Sans, sans-serif",
+                marginTop: "50px",
+                color: "#2A2A2A",
+                fontWeight: "bold",
+                fontSize: "30px",
+              }}
+            >
+              {currentSection}
             </Typography>
             <div style={questionStyles}>
               <Typography variant="h6" style={{ ...questionTextStyles }}>
@@ -1008,7 +1013,7 @@ const Questionnaire = () => {
                           style={{
                             borderBottom: "1px solid #A6A4A3",
                             paddingBottom: "10px",
-                            color: "#A6A4A3",
+                            color: "#4D4556",
                           }}
                         >
                           Select
@@ -1017,7 +1022,7 @@ const Questionnaire = () => {
                           style={{
                             borderBottom: "1px solid #A6A4A3",
                             paddingBottom: "10px",
-                            color: "#A6A4A3",
+                            color: "#4D4556",
                           }}
                         >
                           Search Result Title
@@ -1026,7 +1031,7 @@ const Questionnaire = () => {
                           style={{
                             borderBottom: "1px solid #A6A4A3",
                             paddingBottom: "10px",
-                            color: "#A6A4A3",
+                            color: "#4D4556",
                           }}
                         >
                           Preview Text
@@ -1035,7 +1040,7 @@ const Questionnaire = () => {
                           style={{
                             borderBottom: "1px solid #A6A4A3",
                             paddingBottom: "10px",
-                            color: "#A6A4A3",
+                            color: "#4D4556",
                           }}
                         >
                           Link
@@ -1049,24 +1054,24 @@ const Questionnaire = () => {
                             style={{
                               padding: "10px",
                               textAlign: "center",
-                              color: "#A6A4A3",
+                              color: "#4D4556",
                             }}
                           >
                             <Checkbox checked />
                           </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                          <td style={{ padding: "10px", color: "#4D4556" }}>
                             {reference.title}
                           </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                          <td style={{ padding: "10px", color: "#4D4556" }}>
                             {reference.snippet}
                           </td>
-                          <td style={{ padding: "10px", color: "#A6A4A3" }}>
+                          <td style={{ padding: "10px", color: "#4D4556" }}>
                             <a
                               href={reference.link}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{
-                                color: "#FDFBFA",
+                                color: "blue",
                                 textDecoration: "none",
                               }}
                             >
@@ -1083,9 +1088,9 @@ const Questionnaire = () => {
                 <Button
                   variant="contained"
                   onClick={handleNext}
-                  className="icon-slide-right"
+                  className=""
                   style={{
-                    backgroundColor: "#333230",
+                    backgroundColor: "#449082",
                     color: "white",
                     marginTop: "20px",
                     width: "200px",
@@ -1093,16 +1098,9 @@ const Questionnaire = () => {
                     fontSize: "16px",
                     display: "block",
                     margin: "20px auto 40px auto",
-                    border: "1px solid #FFBC58",
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "#333230";
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFBC58";
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.backgroundColor = "#333230";
+                    border: "1px solid #449082",
+                    fontFamily: "DM Sans, sans-serif",
+                    boxShadow: "none",
                   }}
                 >
                   Next
@@ -1113,7 +1111,7 @@ const Questionnaire = () => {
                   onClick={handleSubmit}
                   className="icon-slide-right"
                   style={{
-                    backgroundColor: "#333230",
+                    backgroundColor: "#A9A7FF",
                     color: "white",
                     marginTop: "20px",
                     width: "200px",
@@ -1121,19 +1119,9 @@ const Questionnaire = () => {
                     fontSize: "16px",
                     display: "block",
                     margin: "20px auto 40px auto",
-                    border: "1px solid #FFBC58",
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = "#FFBC58";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = "#333230";
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFBC58";
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.backgroundColor = "#333230";
+                    border: "1px solid #A851FF",
+                    fontFamily: "DM Sans, sans-serif",
+                    boxShadow: "none",
                   }}
                 >
                   Submit
@@ -1150,11 +1138,11 @@ const Questionnaire = () => {
               <div
                 style={{
                   ...progressBarSegmentStyles,
-                  color: "#FFF",
+                  color: "#2A2A2A",
                   opacity: 1,
                 }}
               >
-                {currentSection != "" && (
+                {currentSection !== "" && (
                   <Tooltip
                     title={
                       <Typography variant="body2" style={{ fontSize: "36" }}>
@@ -1181,9 +1169,11 @@ const Questionnaire = () => {
               <DialogActions>
                 <Button
                   onClick={handleCloseDialog}
-                  color="primary"
+                  style={{
+                    backgroundColor: "#1EC8DF",
+                    color: "white",
+                  }}
                   variant="contained"
-                  className="glow-on-hover"
                 >
                   Close
                 </Button>
@@ -1202,42 +1192,80 @@ const Questionnaire = () => {
             <Button
               variant="text"
               color="primary"
-              startIcon={
-                <ArrowBackIcon style={{ color: "#A4A1A0", fontSize: 32 }} />
-              }
               onClick={handleBack}
               disabled={currentQuestion === 0}
               className="glow-on-hover"
               style={{
-                color: "#A4A1A0",
+                color: "#4D4556",
                 top: "-5px",
+                fontFamily: "DM Sans, sans-serif",
+                transition: "0.3sec",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.color = "#ffffff";
+                e.currentTarget.style.color = "#2B675C";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.color = "#A4A1A0";
+                e.currentTarget.style.color = "#4D4556";
               }}
               onMouseDown={(e) => {
-                e.currentTarget.style.backgroundColor = "#333230";
+                e.currentTarget.style.backgroundColor = "transparent";
               }}
               onMouseUp={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              Back
-            </Button>
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMenuOpen(!isMenuOpen);
-              }}
-              style={menuIconStyles}
-            >
-              <Tooltip title="Menu">
-                <MenuIcon style={{ color: "#A4A1A0", fontSize: 32 }} />
+              <Tooltip title="Back">
+                <ArrowBackIcon style={{ fontSize: 32 }} />
               </Tooltip>
-            </div>
+            </Button>
+            <Tooltip title="Open Search">
+              <IconButton
+                onClick={toggleSearchBar}
+                style={menuIconStyles}
+                sx={{ marginLeft: 1 }}
+                onMouseOver={(e) => {
+                  e.currentTarget.children[0].style.color = "#2B675C";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.children[0].style.color = "#4D4556";
+                }}
+              >
+                <SearchIcon style={{ color: "#A4A1A0", fontSize: 32 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Upload PDF">
+              <IconButton
+                onClick={() => {
+                  fileInputRef.current.click();
+                  togglePdfUpload();
+                }}
+                style={menuIconStyles}
+                sx={{ marginLeft: 1 }}
+                onMouseOver={(e) => {
+                  e.currentTarget.children[0].style.color = "#2B675C";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.children[0].style.color = "#4D4556";
+                }}
+              >
+                <UploadFileIcon style={{ color: "#A4A1A0", fontSize: 32 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Reference Table">
+              <IconButton
+                onClick={toggleReferenceTable}
+                style={menuIconStyles}
+                sx={{ marginLeft: 1 }}
+                onMouseOver={(e) => {
+                  e.currentTarget.children[0].style.color = "#2B675C";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.children[0].style.color = "#4D4556";
+                }}
+              >
+                <ListAltIcon style={{ color: "#A4A1A0", fontSize: 32 }} />
+              </IconButton>
+            </Tooltip>
           </div>
           <div
             style={{
@@ -1248,104 +1276,43 @@ const Questionnaire = () => {
               alignItems: "center",
             }}
           >
-            <Button
-              variant="text"
-              color="primary"
-              startIcon={
-                <CloseIcon
-                  style={{
-                    color: "#A4A1A0",
-                    fontSize: 30,
-                    marginRight: "-5px",
-                  }}
-                />
-              }
-              onClick={handleSaveAndExit}
-              className="glow-on-hover"
-              style={{
-                color: "#A4A1A0",
-                backgroundColor: "#232120",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.color = "#ffffff";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.color = "#A4A1A0";
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.backgroundColor = "#333230";
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
-            >
-              Save and Exit
-            </Button>
+            <Tooltip title="Save and Exit" arrow>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={handleSaveAndExit}
+                className="glow-on-hover"
+                style={{
+                  color: "#4D4556",
+                  backgroundColor: "transparent",
+                  fontFamily: "DM Sans, sans-serif",
+                  transition: "0.3s",
+                }}
+                startIcon={
+                  <CloseIcon
+                    style={{
+                      fontSize: 30,
+                      marginRight: "-5px",
+                    }}
+                  />
+                }
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = "#FF2C5F";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = "#4D4556";
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              >
+                {/* The text has been removed */}
+              </Button>
+            </Tooltip>
           </div>
-          {isMenuOpen && (
-            <div
-              style={menuContainerStyles}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Button
-                onClick={() => handleMenuClick("openSearch")}
-                startIcon={<SearchIcon />}
-                style={{ color: "#A4A1A0", marginBottom: "10px" }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.color = "#ffffff";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.color = "#A4A1A0";
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.backgroundColor = "#333230";
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                {isSearchOpen ? "Close Search" : "Open Search"}
-              </Button>
-              <Button
-                onClick={() => handleMenuClick("uploadPDF")}
-                startIcon={<UploadFileIcon />}
-                style={{ color: "#A4A1A0", marginBottom: "10px" }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.color = "#ffffff";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.color = "#A4A1A0";
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.backgroundColor = "#333230";
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                Upload PDF
-              </Button>
-              <Button
-                onClick={() => handleMenuClick("referenceTable")}
-                startIcon={<ListAltIcon />}
-                style={{ color: "#A4A1A0" }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.color = "#ffffff";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.color = "#A4A1A0";
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.backgroundColor = "#333230";
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                {isReferenceTableOpen ? "Close Table" : "Reference Table"}
-              </Button>
-            </div>
-          )}
           <input
             type="file"
             accept="application/pdf"

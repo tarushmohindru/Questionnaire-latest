@@ -13,7 +13,7 @@ import PrintIcon from "./directbox-notif.svg";
 import Design from "./icon.svg";
 import { useNavigate } from "react-router-dom";
 import { getQList, getNewQ } from "../api";
-import { qStore, jwtStore, bubbleStore } from "../redux/store";
+import { qStore, jwtStore } from "../redux/store";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,10 +23,10 @@ const Dashboard = () => {
   const CustomCard = styled(Card)(({ theme }) => ({
     borderRadius: "2rem",
     boxShadow: "none",
-    backgroundColor: "#ededed",
+    backgroundColor: "#DFFFEC",
     padding: theme.spacing(2),
-    width: "250px",
-    height: "300px",
+    width: "100%",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -34,10 +34,10 @@ const Dashboard = () => {
   }));
 
   const CustomButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#FF7E6B",
+    backgroundColor: "#4D6F74",
     color: "#FFF",
     "&:hover": {
-      backgroundColor: "#FF6A55",
+      backgroundColor: "#3D5F64",
     },
     borderRadius: "8px",
     height: "35px",
@@ -50,13 +50,14 @@ const Dashboard = () => {
     margin: "0",
     marginRight: "18px",
     fontFamily: "DM Sans",
+    textTransform: "none",
   }));
 
   const CustomIconButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#FF7E6B",
+    backgroundColor: "#4D6F74",
     color: "#FFF",
     "&:hover": {
-      backgroundColor: "#FF6A55",
+      backgroundColor: "#3D5F64",
     },
     borderRadius: "8px",
     width: "35px",
@@ -74,10 +75,10 @@ const Dashboard = () => {
   const NewCard = styled(Card)(({ theme }) => ({
     borderRadius: "2rem",
     boxShadow: "none",
-    backgroundColor: "#ededed",
+    backgroundColor: "#DFFFEC",
     padding: theme.spacing(2),
-    width: "600px",
-    height: "610px",
+    width: "100%",
+    height: "630px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -87,20 +88,21 @@ const Dashboard = () => {
 
   const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
     "& .MuiLinearProgress-bar": {
-      backgroundColor: "#FF7E6B",
+      backgroundColor: "#3DEDC3",
     },
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#B2EBE1",
   }));
 
   const DashboardTitle = styled(Typography)(({ theme }) => ({
-    fontFamily: "Space Grotesk",
+    color: "#2A2A2A",
+    fontWeight: "normal",
   }));
 
   const CreateNewButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#FF7E6B",
+    backgroundColor: "#4D6F74",
     color: "#000",
     "&:hover": {
-      backgroundColor: "#FF6A55",
+      backgroundColor: "#3D5F64",
     },
     borderRadius: "8px",
     height: "35px",
@@ -168,15 +170,13 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div style={{ padding: "32px" }}>
-      <DashboardTitle
-        variant="h5"
-        style={{ marginBottom: "20px", fontWeight: "bold" }}
-      >
+    <div style={{ padding: "32px", fontFamily: "DM Sans" }}>
+      <DashboardTitle variant="h5" style={{ color:"#4D4556", fontWeight:"bold", marginBottom: "20px", marginLeft: "10px" }}>
         Dashboard
       </DashboardTitle>
       <button
         className="absolute right-10 top-8 bg-dashred text-white p-2 rounded-lg"
+        style={{ backgroundColor: "#4D6F74", color: "#FFF", fontFamily: "DM Sans" }}
         onClick={handleLogout}
       >
         Logout
@@ -192,22 +192,34 @@ const Dashboard = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "10px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "20px",
           }}
         >
           {questionnare.map((card, index) => (
             <CustomCard key={index}>
               <CardContent style={{ flex: "1 0 auto" }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  style={{ color: "#35483F" }}
+                >
                   {card.orgname}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  style={{ color: "#35483F" }}
+                >
                   {new Date(card.utctimestamp).toString()}
                 </Typography>
                 <Typography
                   variant="body2"
-                  style={{ marginTop: "8px", marginBottom: "8px" }}
+                  style={{
+                    marginTop: "8px",
+                    marginBottom: "8px",
+                    color: "#35483F",
+                  }}
                 >
                   {card.progress}% Completed
                 </Typography>
@@ -226,7 +238,7 @@ const Dashboard = () => {
               >
                 <CustomButton
                   size="small"
-                  style={{ marginLeft: "10px", bottom: "-25px" }}
+                  style={{ marginLeft: "40px", bottom: "-25px", fontFamily: "DM Sans" }}
                   onClick={() => {
                     qStore.dispatch({
                       type: "questionnaire",
@@ -258,10 +270,9 @@ const Dashboard = () => {
             display: "flex",
             alignItems: "flex-start",
             justifyContent: "flex-start",
-            marginRight: "120px",
           }}
         >
-          <NewCard style={{ left: "500px" }}>
+          <NewCard style={{ width: "500px" }}>
             <CardContent
               style={{
                 display: "flex",
@@ -273,7 +284,7 @@ const Dashboard = () => {
               <Typography
                 variant="h6"
                 color="primary"
-                style={{ marginRight: "8px", color: "#000" }}
+                style={{ color: "#35483F", marginRight: "5px" }}
               >
                 Create New
               </Typography>
@@ -286,6 +297,12 @@ const Dashboard = () => {
                 <AddIcon fontSize="small" style={{ color: "white" }} />
               </CreateNewButton>
             </CardContent>
+            <Typography
+              variant="body2"
+              style={{ marginTop: "-10px", color: "#35483F", marginLeft: "15px" }}
+            >
+              Start a new Questionnaire
+            </Typography>
           </NewCard>
         </div>
       </div>

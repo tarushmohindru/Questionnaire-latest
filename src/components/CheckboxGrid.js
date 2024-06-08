@@ -6,20 +6,21 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Radio,
+  Checkbox,
   FormControlLabel,
   Typography,
   Paper,
   Box,
-  Checkbox,
 } from "@mui/material";
 import { answerStore, gridStore, solnStore } from "../redux/store";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 const formStyles = {
   container: {
     marginTop: "-40px",
     padding: "20px",
-    backgroundColor: "#232120",
+    backgroundColor: "white",
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -30,7 +31,7 @@ const formStyles = {
     padding: "20px",
     borderRadius: "15px",
     overflow: "hidden",
-    backgroundColor: "#FFF9F5",
+    backgroundColor: "#E5FFFC",
     flexGrow: 1,
     width: "100%",
     maxWidth: "90%",
@@ -75,22 +76,29 @@ const formStyles = {
   },
 };
 
+const CustomCheckbox = (props) => (
+  <Checkbox
+    {...props}
+    icon={<CheckBoxOutlineBlankIcon />}
+    checkedIcon={<CheckBoxIcon sx={{ color: "#2B675C" }} />}
+  />
+);
+
 const CheckboxGridQuestion = () => {
   const [selectedOption, setSelectedOption] = useState({});
   const [title, setTitle] = useState("");
   const [options, setOptions] = useState([]);
   const [columns, setColumns] = useState([]);
 
-  const handleOptionChange = (item, option, selected) => {
+  const handleOptionChange = (item, option) => {
     setSelectedOption((prevSelectedOption) => {
       const updatedOption = { ...prevSelectedOption };
       const existingOptions = updatedOption[item.name] || {};
-      const existingOption = existingOptions[option];
 
-      if (existingOption) {
-        existingOption.selected = selected;
+      if (existingOptions[option]?.selected) {
+        existingOptions[option].selected = false;
       } else {
-        existingOptions[option] = { selected: selected };
+        existingOptions[option] = { selected: true };
       }
 
       updatedOption[item.name] = existingOptions;
@@ -103,26 +111,33 @@ const CheckboxGridQuestion = () => {
   };
 
   const getCellBackgroundColor = (item, option) => {
-    return selectedOption[item.name] === option ? "#E9DFDA" : "white";
+    return selectedOption[item.name]?.[option]?.selected ? "#B1FFE8" : "white";
   };
 
-  solnStore.subscribe(() => {
-    let state = solnStore.getState();
-    setSelectedOption({ ...selectedOption, ...state });
-    answerStore.dispatch({
-      type: "answer_object",
-      payload: state,
-    });
-  });
-
   useEffect(() => {
-    const unsubscribe = gridStore.subscribe(() => {
+    const unsubscribeSoln = solnStore.subscribe(() => {
+      const state = solnStore.getState();
+      setSelectedOption((prevSelectedOption) => ({
+        ...prevSelectedOption,
+        ...state,
+      }));
+      answerStore.dispatch({
+        type: "answer_object",
+        payload: state,
+      });
+    });
+
+    const unsubscribeGrid = gridStore.subscribe(() => {
       const state = gridStore.getState();
       setTitle(state.itemTitle);
       setOptions(state.options);
       setColumns(state.columns);
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribeSoln();
+      unsubscribeGrid();
+    };
   }, []);
 
   return (
@@ -161,7 +176,12 @@ const CheckboxGridQuestion = () => {
                     >
                       <FormControlLabel
                         control={
-                          <Checkbox
+                          <CustomCheckbox
+                            style={{
+                              display: "block",
+                              margin: "auto",
+                              marginRight: "20px",
+                            }}
                             checked={
                               selectedOption[column]
                                 ? selectedOption[column][option]
@@ -169,12 +189,8 @@ const CheckboxGridQuestion = () => {
                                   : false
                                 : false
                             }
-                            onChange={(e) => {
-                              handleOptionChange(
-                                { name: column },
-                                option,
-                                e.target.checked
-                              );
+                            onChange={() => {
+                              handleOptionChange({ name: column }, option);
                             }}
                             value={option}
                             name={column}

@@ -9,8 +9,8 @@ const ParagraphTextQuestion = ({ question }) => {
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
-        paddingLeft: { xs: '1rem', sm: '2rem', md: '15rem' },
-        paddingRight: { xs: '1rem', sm: '2rem', md: '15rem' }
+        paddingLeft: { xs: '2rem', sm: '2rem', md: '2rem' },
+        paddingRight: { xs: '2rem', sm: '2rem', md: '2rem' }
       }}
     >
       <Typography 
@@ -31,9 +31,19 @@ const ParagraphTextQuestion = ({ question }) => {
           style: {
             padding: '0.5rem',
             borderRadius: '0.25rem',
-            backgroundColor: '#3C3938', 
-            color: '#FDFBFA', 
-            borderColor: '#FDFBFA', 
+            backgroundColor: '#B1FFE8', 
+            borderColor: '#FDFBFA',
+          },
+        }}
+        inputProps={{
+          style: { color: "#4D4556" },
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#449082",
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "#449082",
           },
         }}
       />

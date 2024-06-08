@@ -20,7 +20,7 @@ const formStyles = {
   container: {
     marginTop: "-40px",
     padding: "20px",
-    backgroundColor: "#232120",
+    backgroundColor: "white",
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -28,51 +28,15 @@ const formStyles = {
     alignItems: "center",
   },
   paper: {
+    
     padding: "20px",
     borderRadius: "15px",
     overflow: "hidden",
-    backgroundColor: "#FFF9F5",
+    backgroundColor: "#E5FFFC",
     flexGrow: 1,
     width: "100%",
     maxWidth: "90%",
     margin: "0 auto",
-  },
-  table: {
-    borderCollapse: "collapse",
-    width: "100%",
-    tableLayout: "fixed",
-  },
-  tableHeader: {
-    fontFamily: "DM Sans",
-    color: "#444444",
-    fontSize: "12px",
-    fontWeight: "bold",
-    border: "1px solid #ccc",
-    textAlign: "center",
-    padding: "15px",
-    wordWrap: "break-word",
-  },
-  tableCell: {
-    borderBottom: "1px solid #ccc",
-    color: "#444444",
-    fontWeight: "bold",
-    fontFamily: "DM Sans",
-    fontSize: "12px",
-    borderRight: "1px solid #ccc",
-    borderLeft: "1px solid #ccc",
-    textAlign: "center",
-    padding: "10px",
-    wordWrap: "break-word",
-  },
-  heading: {
-    width: "100%",
-    fontFamily: "DM Sans",
-    fontWeight: 500,
-    fontSize: "24px",
-    lineHeight: "28px",
-    textAlign: "center",
-    marginBottom: "20px",
-    color: "#A4A1A0",
   },
 };
 
@@ -80,7 +44,7 @@ const CustomRadio = (props) => (
   <Radio
     {...props}
     icon={<RadioButtonUncheckedIcon />}
-    checkedIcon={<CheckCircleIcon sx={{ color: "orange" }} />}
+    checkedIcon={<CheckCircleIcon sx={{ color: "#2B675C" }} />}
   />
 );
 
@@ -100,7 +64,7 @@ const GridQuestion = () => {
   };
 
   const getCellBackgroundColor = (item, option) => {
-    return selectedOption[item.name] === option ? "#E9DFDA" : "white";
+    return selectedOption[item.name] === option ? "#B1FFE8" : "white";
   };
 
   solnStore.subscribe(() => {
@@ -122,17 +86,21 @@ const GridQuestion = () => {
 
   return (
     <Box sx={formStyles.container}>
-      <Typography variant="h4" gutterBottom sx={formStyles.heading}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        style={{ fontFamily: "", fontWeight: 500, fontSize: "24px", lineHeight: "28px", textAlign: "center", marginBottom: "20px", color: "#A4A1A0" }}
+      >
         {title}
       </Typography>
-      <Paper sx={formStyles.paper}>
+      <Paper style={{ ...formStyles.paper, fontFamily: "" }}>
         <Box sx={{ overflowX: "auto" }}>
-          <Table sx={formStyles.table}>
+          <Table style={{ fontFamily: "", borderCollapse: "collapse", width: "100%", tableLayout: "fixed", borderRadius: "10px" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={formStyles.tableHeader}></TableCell>
+                <TableCell style={{ fontFamily: "", color: "#444444", fontSize: "12px", fontWeight: "bold", border: "1px solid #ccc", textAlign: "center", padding: "15px", wordWrap: "break-word" }}></TableCell>
                 {options.map((option, i) => (
-                  <TableCell key={i} align="center" sx={formStyles.tableHeader}>
+                  <TableCell key={i} align="center" style={{ fontFamily: "", color: "#444444", fontSize: "12px", fontWeight: "bold", border: "1px solid #ccc", textAlign: "center", padding: "15px", wordWrap: "break-word" }}>
                     {option}
                   </TableCell>
                 ))}
@@ -141,23 +109,33 @@ const GridQuestion = () => {
             <TableBody>
               {columns.map((column, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={formStyles.tableCell}>{column}</TableCell>
+                  <TableCell style={{ fontFamily: "", borderBottom: "1px solid #ccc", color: "#444444", fontWeight: "bold", fontSize: "12px", borderRight: "1px solid #ccc", borderLeft: "1px solid #ccc", textAlign: "center", padding: "10px", wordWrap: "break-word" }}>{column}</TableCell>
                   {options.map((option, i) => (
                     <TableCell
                       key={`${column}-${i}`}
                       align="center"
-                      sx={{
-                        ...formStyles.tableCell,
-                        backgroundColor: getCellBackgroundColor(
-                          { name: column },
-                          option
-                        ),
+                      style={{
+                        fontFamily: "",
+                        borderBottom: "1px solid #ccc",
+                        color: "#444444",
+                        fontWeight: "bold",
+                        fontSize: "12px",
+                        borderRight: "1px solid #ccc",
+                        borderLeft: "1px solid #ccc",
+                        textAlign: "center",
+                        padding: "10px",
+                        wordWrap: "break-word",
+                        backgroundColor: getCellBackgroundColor({ name: column }, option),
                       }}
                     >
                       <FormControlLabel
                         control={
                           <CustomRadio
+                          style={{ display: "block", margin: "auto", marginRight: "20px" }}
+                          
                             checked={selectedOption[column] === option}
+                            
+
                             onChange={() =>
                               handleOptionChange({ name: column }, option)
                             }

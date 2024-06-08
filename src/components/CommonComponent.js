@@ -13,7 +13,7 @@ const CommonComponent = ({ handleNext, section }) => {
       justifyContent="center"
       minHeight="100vh"
       minWidth="200vh"
-      bgcolor="#232120"
+      bgcolor="white"
     >
       <p className=" font-extrabold text-white">{section}</p>
       <Box
@@ -21,7 +21,7 @@ const CommonComponent = ({ handleNext, section }) => {
         maxWidth="800px"
         mb={4}
         p={2}
-        bgcolor="#232120"
+        bgcolor="#E5FFFC"
         borderRadius="8px"
       >
         <BarChart />
@@ -30,7 +30,7 @@ const CommonComponent = ({ handleNext, section }) => {
         width="90%"
         maxWidth="800px"
         p={2}
-        bgcolor="#232120"
+        bgcolor="#E5FFFC"
         borderRadius="8px"
       >
         <ProgressCircles />
@@ -40,7 +40,7 @@ const CommonComponent = ({ handleNext, section }) => {
         variant="contained"
         onClick={handleNext}
         style={{
-          backgroundColor: "#333230",
+          backgroundColor: "#449082",
           color: "white",
           marginTop: "20px",
           width: "200px",
@@ -48,9 +48,10 @@ const CommonComponent = ({ handleNext, section }) => {
           fontSize: "16px",
           display: "block",
           margin: "20px auto 40px auto",
-          border: "1px solid #FFBC58",
+          border: "1px solid #449082",
+          boxShadow: "none",
         }}
-      >
+        >
         Next
       </Button>
     </Box>

@@ -35,7 +35,7 @@ const MultipleChoiceQuestion = ({ question, options }) => {
       justifyContent="center"
       sx={{
         marginBottom: "1.5rem",
-        paddingX: { xs: "1rem", sm: "2rem", md: "10rem", lg: "15rem" },
+        paddingX: { xs: "2rem", sm: "2rem", md: "2rem", lg: "2rem" },
       }}
     >
       <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -47,7 +47,7 @@ const MultipleChoiceQuestion = ({ question, options }) => {
             <Box
               key={option}
               sx={{
-                backgroundColor: "#ffffff",
+                backgroundColor: "#B1FFE8",
                 borderRadius: "0.5rem",
                 padding: "1rem",
                 marginBottom: "0.5rem",
@@ -66,9 +66,9 @@ const MultipleChoiceQuestion = ({ question, options }) => {
                 control={
                   <Radio
                     sx={{
-                      color: "#232120",
+                      color: "#34D4B7",
                       "&.Mui-checked": {
-                        color: "#232120",
+                        color: "#2B675C",
                       },
                     }}
                   />

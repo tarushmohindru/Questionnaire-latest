@@ -13,16 +13,20 @@ const ScaleQuestion = ({ question, minLabel, maxLabel }) => {
     });
   };
 
-  solnStore.subscribe(() => {
-    if (solnStore.getState()) {
-      let state = solnStore.getState();
-      setValue(state);
-      answerStore.dispatch({
-        type: "answer_object",
-        payload: state,
-      });
-    }
-  });
+  React.useEffect(() => {
+    const unsubscribe = solnStore.subscribe(() => {
+      if (solnStore.getState()) {
+        let state = solnStore.getState();
+        setValue(state);
+        answerStore.dispatch({
+          type: "answer_object",
+          payload: state,
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <Box
@@ -32,39 +36,40 @@ const ScaleQuestion = ({ question, minLabel, maxLabel }) => {
       justifyContent="center"
       sx={{
         marginBottom: "1.5rem",
-        paddingX: { xs: "1rem", sm: "2rem", md: "10rem", lg: "15rem" },
+        paddingX: { xs: "2rem", sm: "2rem", md: "2rem", lg: "2rem" },
       }}
     >
       <Typography
         variant="h6"
         fontWeight="bold"
         gutterBottom
-        style={{ color: "#a4a1a0" }}
+        sx={{ color: "#a4a1a0", textAlign: "center", fontFamily: "DM Sans, sans-serif" }}
       >
         {question}
       </Typography>
-      <Box display="flex" alignItems="center" mt="0.5rem" width="100%">
+      <Box display="flex" alignItems="center" mt="0.5rem" width="80%">
         <Slider
           value={value}
           onChange={handleSliderChange}
           min={1}
           max={5}
-          step={1}
+          step={0.1} 
           marks={[
             { value: 1, label: minLabel },
             { value: 5, label: maxLabel },
           ]}
+          valueLabelDisplay="auto"
           sx={{
             flexGrow: 1,
-            color: "#a4a1a0",
+            color: "#34D4B7",
             "& .MuiSlider-thumb": {
-              backgroundColor: "#a4a1a0",
+              backgroundColor: "#1EC8DF",
             },
             "& .MuiSlider-valueLabel": {
-              color: "#a4a1a0",
+              color: "#1EC8DF",
             },
             "& .MuiSlider-markLabel": {
-              color: "#a4a1a0",
+              color: "#4D4556",
             },
           }}
         />

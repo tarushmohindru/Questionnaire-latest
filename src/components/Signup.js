@@ -10,13 +10,15 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from "@mui/icons-material";
-import wave from "./wave.svg";
+import flowerImage from "./chinnu-indrakumar-6nRyj0rijkQ-unsplash.svg";
+import vectorImage from "./Vector.svg";
 import { signup } from "../api";
 import { useNavigate } from "react-router-dom";
 import { jwtStore } from "../redux/store";
 
 const Container = styled(Box)({
   display: "flex",
+  background: `url(${vectorImage}) no-repeat center center / 100% 100%`,
   height: "100vh",
   width: "100vw",
   overflow: "hidden",
@@ -24,8 +26,8 @@ const Container = styled(Box)({
 });
 
 const LeftPane = styled(Box)({
-  width: "40%",
-  background: `url(${wave}) no-repeat`,
+  width: "28%",
+  background: `url(${flowerImage}) no-repeat center center`,
   backgroundSize: "cover",
 });
 
@@ -41,7 +43,7 @@ const RightPane = styled(Box)({
 const WelcomeText = styled(Typography)({
   position: "absolute",
   top: "50px",
-  left: "5%",
+  left: "20%",
   transform: "translateX(-50%)",
   fontFamily: "Space Grotesk, sans-serif",
   fontWeight: 700,
@@ -55,7 +57,7 @@ const WelcomeText = styled(Typography)({
 const LoginForm = styled(Box)({
   position: "absolute",
   top: "50%",
-  left: "40%",
+  left: "55%",
   transform: "translate(-50%, -50%)",
   width: "556.61px",
   textAlign: "left",
@@ -63,7 +65,7 @@ const LoginForm = styled(Box)({
 
 const Label = styled(Typography)({
   marginBottom: "3px",
-  color: "#C68C35",
+  color: "#35C69A",
   fontSize: "16px",
   marginLeft: "20px",
 });
@@ -97,17 +99,17 @@ const SignupLink = styled(Link)({
   marginBottom: "10px",
   textAlign: "left",
   marginLeft: "20px",
-  color: "#C68C35",
+  color: "#35C69A",
 });
 
 const NextButton = styled(Button)({
-  backgroundColor: "#5A4943",
+  backgroundColor: "#35C69A",
   color: "white",
   borderRadius: "30px",
   width: "400px",
   height: "45px",
   "&:hover": {
-    backgroundColor: "#3E3A3A",
+    backgroundColor: "#2BA37F",
   },
   display: "flex",
   alignItems: "center",

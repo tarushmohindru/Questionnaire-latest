@@ -4,6 +4,7 @@ import { answerStore, solnStore } from "../redux/store";
 
 const TextQuestion = ({ question }) => {
   const [data, setData] = useState("");
+
   const handleChange = (e) => {
     setData(e.target.value);
     answerStore.dispatch({
@@ -11,9 +12,11 @@ const TextQuestion = ({ question }) => {
       payload: e.target.value,
     });
   };
+
   solnStore.subscribe(() => {
     setData(solnStore.getState());
   });
+
   return (
     <Box
       sx={{
@@ -21,8 +24,8 @@ const TextQuestion = ({ question }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingLeft: { xs: "1rem", sm: "2rem", md: "15rem" },
-        paddingRight: { xs: "1rem", sm: "2rem", md: "15rem" },
+        paddingLeft: { xs: "2rem", sm: "2rem", md: "2rem" },
+        paddingRight: { xs: "2rem", sm: "2rem", md: "2rem" },
       }}
     >
       <Typography
@@ -38,17 +41,28 @@ const TextQuestion = ({ question }) => {
         fullWidth
         size="small"
         value={data}
-        onChange={(e) => {
-          handleChange(e);
-        }}
+        onChange={handleChange}
         placeholder="Type your answer here"
         InputProps={{
           style: {
             padding: "0.5rem",
             borderRadius: "0.25rem",
             borderColor: "#FDFBFA",
-            backgroundColor: "#3C3938",
-            color: "#FDFBFA",
+            backgroundColor: "#B1FFE8",
+          },
+          classes: {
+            notchedOutline: 'custom-notched-outline'
+          }
+        }}
+        inputProps={{
+          style: { color: "#4D4556" },
+        }}
+        sx={{
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#449082",
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "#449082",
           },
         }}
       />

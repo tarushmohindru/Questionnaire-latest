@@ -48,10 +48,10 @@ const BarChart = () => {
       <ResponsiveContainer width="100%" height={300}>
         <RechartsBarChart data={barData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" stroke="#ffffff" />
-          <YAxis stroke="#ffffff" domain={[0, 10]} />
+          <XAxis dataKey="name" stroke="#4D4556" />
+          <YAxis stroke="#4D4556" domain={[0, 10]} />
           <Tooltip />
-          <Bar dataKey="value" fill="#FFBC58" barSize={30} />
+          <Bar dataKey="value" fill="#1EC8DF" barSize={30} />
         </RechartsBarChart>
       </ResponsiveContainer>
     </Box>
