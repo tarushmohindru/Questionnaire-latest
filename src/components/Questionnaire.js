@@ -771,6 +771,10 @@ const Questionnaire = () => {
                       alignItems: "center",
                       width: "100%",
                     }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handlePdfSearch(pdfSearchQuery);
+                    }}
                   >
                     <InputBase
                       sx={{ ml: 1, flex: 1 }}
@@ -1322,9 +1326,7 @@ const Questionnaire = () => {
                 onMouseUp={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
-              >
-                {/* The text has been removed */}
-              </Button>
+              ></Button>
             </Tooltip>
           </div>
           <input
