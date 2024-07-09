@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Button } from "@mui/material";
 import ProgressCircles from "./ProgressCircles";
 import BarChart from "./BarChart";
-import RadarChart from "./radarChart"; 
+import RadarChart from "./radarChart";
 
 const CommonComponent = ({ handleNext, section }) => {
   return (

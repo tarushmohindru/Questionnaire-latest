@@ -14,6 +14,7 @@ import Design from "./icon.svg";
 import { useNavigate } from "react-router-dom";
 import { getQList, getNewQ } from "../api";
 import { qStore, jwtStore } from "../redux/store";
+import { formatTimeStamp } from "../utils/utils";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -171,12 +172,24 @@ const Dashboard = () => {
 
   return (
     <div style={{ padding: "32px", fontFamily: "DM Sans" }}>
-      <DashboardTitle variant="h5" style={{ color:"#4D4556", fontWeight:"bold", marginBottom: "20px", marginLeft: "10px" }}>
+      <DashboardTitle
+        variant="h5"
+        style={{
+          color: "#4D4556",
+          fontWeight: "bold",
+          marginBottom: "20px",
+          marginLeft: "10px",
+        }}
+      >
         Dashboard
       </DashboardTitle>
       <button
         className="absolute right-10 top-8 bg-dashred text-white p-2 rounded-lg"
-        style={{ backgroundColor: "#4D6F74", color: "#FFF", fontFamily: "DM Sans" }}
+        style={{
+          backgroundColor: "#4D6F74",
+          color: "#FFF",
+          fontFamily: "DM Sans",
+        }}
         onClick={handleLogout}
       >
         Logout
@@ -204,14 +217,14 @@ const Dashboard = () => {
                   gutterBottom
                   style={{ color: "#35483F" }}
                 >
-                  {card.orgname}
+                  {card.data[0].answers}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
                   style={{ color: "#35483F" }}
                 >
-                  {new Date(card.utctimestamp).toString()}
+                  {formatTimeStamp(card.utctimestamp)}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -238,7 +251,11 @@ const Dashboard = () => {
               >
                 <CustomButton
                   size="small"
-                  style={{ marginLeft: "40px", bottom: "-25px", fontFamily: "DM Sans" }}
+                  style={{
+                    marginLeft: "40px",
+                    bottom: "-25px",
+                    fontFamily: "DM Sans",
+                  }}
                   onClick={() => {
                     qStore.dispatch({
                       type: "questionnaire",
@@ -299,7 +316,11 @@ const Dashboard = () => {
             </CardContent>
             <Typography
               variant="body2"
-              style={{ marginTop: "-10px", color: "#35483F", marginLeft: "15px" }}
+              style={{
+                marginTop: "-10px",
+                color: "#35483F",
+                marginLeft: "15px",
+              }}
             >
               Start a new Questionnaire
             </Typography>

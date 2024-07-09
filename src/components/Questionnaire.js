@@ -553,7 +553,9 @@ const Questionnaire = () => {
           loadReferencesForQuestion(currentQuestion + 1);
         }
       } else {
-        handleSubmit();
+        saveCurrentReferences();
+        setCompletedSections(completedSections + 1);
+        setOpenDialog(true);
       }
     } else {
       handleError("This field is required");
@@ -630,10 +632,53 @@ const Questionnaire = () => {
         </Alert>
       </Snackbar>
       {showCommonComponent ? (
-        <CommonComponent
-          handleNext={handleCommonNext}
-          section={currentSection}
-        />
+        <div>
+          <div
+            style={{
+              position: "absolute",
+              marginRight: 0,
+            }}
+          >
+            <Tooltip title="Save and Exit" arrow>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={handleSaveAndExit}
+                className="glow-on-hover"
+                style={{
+                  color: "#4D4556",
+                  backgroundColor: "transparent",
+                  fontFamily: "DM Sans, sans-serif",
+                  transition: "0.3s",
+                }}
+                startIcon={
+                  <CloseIcon
+                    style={{
+                      fontSize: 30,
+                      marginRight: "-5px",
+                    }}
+                  />
+                }
+                onMouseOver={(e) => {
+                  e.currentTarget.style.color = "#FF2C5F";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.color = "#4D4556";
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              ></Button>
+            </Tooltip>
+          </div>
+          <CommonComponent
+            handleNext={handleCommonNext}
+            section={currentSection}
+          />
+        </div>
       ) : (
         <>
           <div
@@ -852,9 +897,11 @@ const Questionnaire = () => {
                         <Page
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          width={pdfContainerRef.current
-                            ? pdfContainerRef.current.offsetWidth
-                            : 600}
+                          width={
+                            pdfContainerRef.current
+                              ? pdfContainerRef.current.offsetWidth
+                              : 600
+                          }
                         />
                       ))}
                     </Document>
@@ -1178,7 +1225,12 @@ const Questionnaire = () => {
               </div>
             </div>
             <Dialog open={openDialog} onClose={handleCloseDialog}>
-              <DialogTitle>Questionnaire Submitted</DialogTitle>
+              <DialogTitle>
+                Questionnaire{" "}
+                {questions.length - 1 == currentQuestion
+                  ? "submitted"
+                  : "Saved"}
+              </DialogTitle>
               <DialogContent>
                 <Typography variant="body1">
                   Your answers have been successfully submitted!
