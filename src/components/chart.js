@@ -67,7 +67,7 @@ const ChartComponent = () => {
   };
 
   const options = {
-    maintainAspectRatio: false, 
+    maintainAspectRatio: false,
     scales: {
       x: {
         title: {
@@ -122,14 +122,28 @@ const ChartComponent = () => {
   }, []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+      }}
+    >
       <Button
+        variant="contained"
         onClick={() => {
           navigate("/home");
         }}
-        style={{ marginBottom: "20px" }}
+        style={{
+          marginBottom: "20px",
+          position: "absolute",
+          top: "5vh",
+          left: "5vw",
+        }}
       >
-        Dashboard
+        Return to Dashboard
       </Button>
       <div ref={chartRef} style={{ width: "80%", height: "70vh" }}>
         <Bubble data={data} options={options} />

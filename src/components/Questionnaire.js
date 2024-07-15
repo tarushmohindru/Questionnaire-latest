@@ -134,6 +134,7 @@ const Questionnaire = () => {
     if (currentQuestion > 0) {
       setcurrentQuestion(currentQuestion - 1);
       loadReferencesForQuestion(currentQuestion - 1);
+      setCurrentSection(currentSection - 1);
     }
   };
 
@@ -636,7 +637,8 @@ const Questionnaire = () => {
           <div
             style={{
               position: "absolute",
-              marginRight: 0,
+              top: "5vh",
+              right: "5vw",
             }}
           >
             <Tooltip title="Save and Exit" arrow>
@@ -673,6 +675,31 @@ const Questionnaire = () => {
                 }}
               ></Button>
             </Tooltip>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+              <DialogTitle>
+                Questionnaire{" "}
+                {questions.length - 1 == currentQuestion
+                  ? "submitted"
+                  : "Saved"}
+              </DialogTitle>
+              <DialogContent>
+                <Typography variant="body1">
+                  Your answers have been successfully submitted!
+                </Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleCloseDialog}
+                  style={{
+                    backgroundColor: "#1EC8DF",
+                    color: "white",
+                  }}
+                  variant="contained"
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
           </div>
           <CommonComponent
             handleNext={handleCommonNext}

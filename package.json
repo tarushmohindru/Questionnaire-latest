@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^6.4.5",
     "axios": "^1.6.8",
     "chart.js": "^4.4.3",
+    "chartjs-chart-geo": "^4.3.1",
     "date-fns": "^3.6.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
