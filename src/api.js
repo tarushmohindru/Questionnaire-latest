@@ -109,3 +109,12 @@ export const saveAnswer = async (qid, jwtToken, payload) => {
     return e;
   }
 };
+
+export const saveAndNext = async (jwtToken, payload) => {
+  let res = await axios.post(`${url}/next`, payload, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  });
+  console.log(res.data);
+};

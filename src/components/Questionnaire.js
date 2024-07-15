@@ -130,6 +130,7 @@ const Questionnaire = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
       loadReferencesForQuestion(currentQuestion - 1);
+      setCurrentSection(currentSection - 1);
     }
   };
 
