@@ -557,7 +557,7 @@ const Questionnaire = () => {
         if (questions[currentQuestion + 1].type === "SECTION_HEADER") {
           setShowCommonComponent(true);
         } else {
-          setcurrentQuestion(currentQuestion + 1);
+          setCurrentQuestion(currentQuestion + 1);
           setCompletedSections(completedSections + 1);
           loadReferencesForQuestion(currentQuestion + 1);
         }
