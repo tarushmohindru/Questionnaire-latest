@@ -540,7 +540,7 @@ const Questionnaire = () => {
   });
 
   const save = async (payload) => {
-    let res = await saveAnswer(searchParams.get("id"), jwt, payload);
+     let res = await saveAnswer(searchParams.get("id"), jwt, payload);
     if (res.status === "ok") {
       gridStore.dispatch({
         type: "grid",
@@ -557,12 +557,14 @@ const Questionnaire = () => {
         if (questions[currentQuestion + 1].type === "SECTION_HEADER") {
           setShowCommonComponent(true);
         } else {
-          setCurrentQuestion(currentQuestion + 1);
+          setcurrentQuestion(currentQuestion + 1);
           setCompletedSections(completedSections + 1);
           loadReferencesForQuestion(currentQuestion + 1);
         }
       } else {
-        handleSubmit();
+        saveCurrentReferences();
+        setCompletedSections(completedSections + 1);
+        setOpenDialog(true);
       }
     } else {
       handleError("This field is required");
